@@ -12,3 +12,14 @@ const init = () => {
 };
 
 window.addEventListener('load', init());
+
+// comenzando con el proceso de autenticacion de usuario
+
+const signupForm = document.querySelector('.signup-btnSignup btn-paw');
+signupForm.addEventListener("click", (e) => {
+  
+   const email= document.getElementById('input-email');
+   const password= document.getElementById('input-paswoord');
+    console.log("hola");
+   })
+   
