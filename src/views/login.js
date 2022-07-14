@@ -1,3 +1,5 @@
+import{ } from '../index.js';
+
 export const login = () => {
   const viewLogin = `
     <section class="logo flex">
@@ -9,7 +11,7 @@ export const login = () => {
       <form class="login-form-group flex">
         <input type="text" class="login-email input-paw" placeholder="Correo">
         <input type="password" class="login-password input-paw" placeholder="Contraseña">
-        <button class="login-btnLogin btn-paw"><a href="#/wall">Iniciar Sesión</a></button>
+        <button id="btn-login"class="login-btnLogin btn-paw"><a href="#/wall">Iniciar Sesión</a></button>
       </form>
       <p class="login-text">O bien ingresa con</p>
       <img class="login-google-img" src="pictures/google.png">
@@ -21,5 +23,12 @@ export const login = () => {
   containerLogin.innerHTML = viewLogin;
   containerLogin.className = 'view-login';
 
+  /*const btnlogin = containerSignup.querySelector('.login-btnLogin btn-paw');
+  const email = containerSignup.querySelector('.login-email input-paw');
+  const password = containerSignup.querySelector('.login-password input-paw');
+  btnlogin.addEventListener('click', () => {
+    userExiting(email.value, password.value);
+  });
+ */
   return containerLogin;
 };
