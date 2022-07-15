@@ -1,4 +1,5 @@
-import{ } from '../index.js';
+import { loginUser, registerUser } from '../index.js';
+
 
 export const login = () => {
   const viewLogin = `
@@ -11,7 +12,8 @@ export const login = () => {
       <form class="login-form-group flex">
         <input type="text" class="login-email input-paw" placeholder="Correo">
         <input type="password" class="login-password input-paw" placeholder="Contraseña">
-        <button id="btn-login"class="login-btnLogin btn-paw"><a href="#/wall">Iniciar Sesión</a></button>
+        <button class="login-btnLogin btn-paw"><a class="login-btnLogin-ref">Iniciar Sesión</a></button>
+
       </form>
       <p class="login-text">O bien ingresa con</p>
       <img class="login-google-img" src="pictures/google.png">
@@ -23,12 +25,19 @@ export const login = () => {
   containerLogin.innerHTML = viewLogin;
   containerLogin.className = 'view-login';
 
-  /*const btnlogin = containerSignup.querySelector('.login-btnLogin btn-paw');
-  const email = containerSignup.querySelector('.login-email input-paw');
-  const password = containerSignup.querySelector('.login-password input-paw');
-  btnlogin.addEventListener('click', () => {
-    userExiting(email.value, password.value);
+  const btnLogin = containerLogin.querySelector('.login-btnLogin');
+  const email = containerLogin.querySelector('.login-email');
+  const password = containerLogin.querySelector('.login-password');
+
+  btnLogin.addEventListener('click', () => {
+    if (email.value !== '' || password.value !== '') {
+      loginUser(email.value, password.value);
+    } else {
+      // btnLoginref.setAttribute('href', '#/login');
+      alert('No puedes dejar los campos vacios');
+    }
   });
- */
+
+
   return containerLogin;
 };

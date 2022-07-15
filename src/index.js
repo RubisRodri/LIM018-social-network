@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js';
+// import { getFirestore, doc, setDoc, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
+import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
-import {  } from "https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { changeRoute } from './routes/router.js';
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,20 +18,39 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// initializeApp(firebaseConfig);
 const auth = getAuth();
-// const db = getFirestore(app);
+const db = getFirestore(app);
 
 // creacion de nuevo usuario a nuestra app con correo y contraseña.
-export const registerUser = (email, password) => {
+export const registerUser = (name, lastName, email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
       // eslint-disable-next-line no-console
+      // console.log(user);
+      // Añadir datos al firestore con diferente ID
+      // addDoc(collection(db, 'users'), {
+      //   Name: name,
+      //   LastName: lastName,
+      //   Email: email,
+      //   Password: password,
+      // });
+      // Añadir datos al firestore con mismo ID
+      setDoc(doc(db, 'users', user.uid), {
+        Name: name,
+        LastName: lastName,
+        Email: email,
+        Password: password,
+      });
+      // Si el usuario verifico mail puede ingresar al wall
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+          console.log('enviando correo');
+        });
       console.log(user);
-      // ...
-      verification();
+
+      // termina
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -41,10 +61,11 @@ export const registerUser = (email, password) => {
 };
 
 
+
  //metodo de acceso a usuario existente
 
 
-export const userExiting = (email, password) =>{
+ /*export const userExiting = (email, password) =>{
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -57,37 +78,42 @@ export const userExiting = (email, password) =>{
         const errorMessage = error.message;
     })
 };
-
+*/
 // colocando el observador para saber cuando el usuario ingresa a nuestra web.
 
-export const observerUser = (email, password) =>{
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-    if (user) {
-        console.log("este usuario esta activo");
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/firebase.User
-    const uid = user.uid;
-    // ...
-  } else {
-    console.log("no existe este usuario");
-    // User is signed out
-    // ...
-    }
+
+export const loginUser = (email, password) => {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      // ...
+      console.log(user);
+      if (user.emailVerified) {
+        changeRoute('#/wall');
+      } else {
+        alert('Primero verifica email');
+      }
     })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert("Usuario y/o contraseña incorrectos");
+    });
 };
 
-observerUser();
+// const observer = () => {
+//   onAuthStateChanged(auth, (user) => {
+//     if (user) {
+//       const uid = user.uid;
+//       console.log('Usuario activo');
+//       changeRoute('#/wall');
+//       // ...
+//     } else {
+//       // User is signed out
+//       console.log('No existe usuario activo');
+//     }
+//   });
+// };
 
-// funcion para verificar si el email es valido
-
-export function verification(){
-    const auth = getAuth();
-    sendEmailVerification(auth.currentUser)
-    .then(() => {
-        // Email verification sent!
-        // ...
-     console.log("enviando correo...")
-  });
-
-}
+// observer();

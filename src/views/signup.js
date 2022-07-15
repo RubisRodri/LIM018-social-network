@@ -17,17 +17,26 @@ export const signup = () => {
       </form>
       <p class="signup-login-text">¿Ya tienes cuenta?<a href="#/login"><strong class="login-signup-btn"> Inicia sesión.</strong></a></p>
     </section>
+      <dialog open class="modal">
+       <h2>Gracias por Registrarte</h2>
+       <p>por favor confirma tu correo electronico para iniciar sesion</p>
+       <button id="btn-cerrarModal">Cerrar</button>
+      </dialog> 
   `;
 
   const containerSignup = document.createElement('div');
   containerSignup.innerHTML = viewSignup;
   containerSignup.className = 'view-signup';
-
+  
   const btnSignup = containerSignup.querySelector('.signup-btnSignup');
   const email = containerSignup.querySelector('.signup-email');
-  const password = containerSignup.querySelector('.signup-password');
+  const password = containerSignup.querySelector('.sign up-password');
+  const name = containerSignup.querySelector('.signup-name');
+  const lastName = containerSignup.querySelector('.signup-lastName');
+  //const modal = containerSignup.querySelector(".modal");
   btnSignup.addEventListener('click', () => {
-    registerUser(email.value, password.value);
+    registerUser(name.value, lastName.value, email.value, password.value);
+   // modal.showModal();
   });
   return containerSignup;
 };
