@@ -1,6 +1,5 @@
 import { loginUser, registerUser } from '../index.js';
 
-
 export const login = () => {
   const viewLogin = `
     <section class="logo flex">
@@ -28,16 +27,19 @@ export const login = () => {
   const btnLogin = containerLogin.querySelector('.login-btnLogin');
   const email = containerLogin.querySelector('.login-email');
   const password = containerLogin.querySelector('.login-password');
+  
+ 
 
   btnLogin.addEventListener('click', () => {
     if (email.value !== '' || password.value !== '') {
       loginUser(email.value, password.value);
+     
     } else {
       // btnLoginref.setAttribute('href', '#/login');
       alert('No puedes dejar los campos vacios');
-    }
-  });
-
-
+    };
+    
+    });  
+ 
   return containerLogin;
 };

@@ -1,6 +1,6 @@
 // aqui exportaras las funciones que necesites
 import { login } from '../views/login.js';
-import { signup } from '../views/signup.js';
+import { signup, } from '../views/signup.js';
 import { wall } from '../views/wall.js';
 
 export const changeRoute = (hash) => {
@@ -20,11 +20,12 @@ const showViews = (hash) => {
       break;
     case '#/signup':
       containerRoot.appendChild(signup());
-      break;
+      break; 
     case '#/wall':
       containerRoot.appendChild(wall());
       break;
-    default:
-      containerRoot.innerHTML = '<h2>Esta página no existe</h2>';
+    default:containerRoot.innerHTML = '<h2>Esta página no existe</h2>';
+      
   }
 };
+

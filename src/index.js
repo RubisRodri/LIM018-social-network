@@ -32,6 +32,7 @@ export const registerUser = (name, lastName, email, password) => {
         Email: email,
         Password: password,
       });
+
       // Si el usuario verifico mail puede ingresar al wall
       sendEmailVerification(auth.currentUser)
         .then(() => {
@@ -91,18 +92,19 @@ export const loginUser = (email, password) => {
     });
 };
 
-// const observer = () => {
-//   onAuthStateChanged(auth, (user) => {
-//     if (user) {
-//       const uid = user.uid;
-//       console.log('Usuario activo');
-//       changeRoute('#/wall');
-//       // ...
-//     } else {
-//       // User is signed out
-//       console.log('No existe usuario activo');
-//     }
-//   });
-// };
+   /* const observer = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log('Usuario activo');
+        changeRoute('#/wall');
+        // ...
+      } else {
+        // User is signed out
+        console.log('No existe usuario activo');
+      }
+    });
+};
 
-// observer();
+ observer();
+*/
