@@ -1,4 +1,6 @@
 import { registerUser } from '../index.js';
+import { changeRoute } from '../routes/router.js';
+// import { changeRoute } from '../routes/router.js';
 
 export const signup = () => {
   const viewSignup = `
@@ -9,12 +11,14 @@ export const signup = () => {
 
     <section class="signup">
       <form class="signup-form-group flex">
-          <input type="text" name="name" class="signup-name input-paw" placeholder="Nombre" required>
-          <input type="text" name="lastname" class="signup-lastName input-paw" placeholder="Apellidos" required>
-          <input id="emailSignup" name="email" type="email" class="signup-email input-paw" placeholder="Correo" required>
-          <input id="passSignup" name="password" type="text" class="signup-password input-paw" placeholder="Contraseña" required>
-          <button id="btnSignup" class="signup-btnSignup btn-paw"><a href="#/login">Registrar</a></button>
-       <dialog id="signup-modal" class="signup-modal">
+
+        <input type="text" class="signup-name input-paw" placeholder="Nombre" required>
+        <input type="text" class="signup-lastName input-paw" placeholder="Apellidos" required>
+        <input id="emailSignup" type="email" class="signup-email input-paw" placeholder="Correo" required>
+        <input id="passSignup" type="text" class="signup-password input-paw" placeholder="Contraseña" required>
+        <div class="signup-errortext"></div>
+        <button id="btnSignup" class="signup-btnSignup btn-paw"><a>Registrar</a></button>
+        <dialog id="signup-modal" class="signup-modal">
           <img class="check-out" src="pictures/chek-list.png"></img>
           <h2>¡Usuario registrado con éxito!</h2>
           <p>Revise su correo electronico para iniciar sesión</p>
@@ -35,31 +39,28 @@ export const signup = () => {
   const password = containerSignup.querySelector('.signup-password');
   const name = containerSignup.querySelector('.signup-name');
   const lastName = containerSignup.querySelector('.signup-lastName');
-  //creacion del modal
-  const modal = containerSignup.querySelector(".signup-modal");
-  const btnCloseModal = containerSignup.querySelector(".signup-closeModal");
-  
-    btnSignup.addEventListener("click", (e) =>{
-      e.preventDefault();
-      
-      console.log(modal);
-      console.log(email);
-      if (email.value.length !== 0) { 
+  const errorText = containerSignup.querySelector('.signup-errortext');
+  const modal = containerSignup.querySelector('.signup-modal');
+  const btnCloseModal = containerSignup.querySelector('.signup-closeModal');
 
+  btnSignup.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (email.value !== '' || password.value !== '' || name.value !== '' || lastName.value !== '') {
       registerUser(name.value, lastName.value, email.value, password.value);
       modal.showModal();
-
-      } else {
-        
-        alert('No puedes dejar los campos vacios');
-        };
-        // evento para cerrar el modal
-        btnCloseModal.addEventListener("click", () =>{
-          modal.closeModal();
-       });
+    } else {
+      errorText.innerHTML = 'Los datos ingresados no son válidos.';
+      name.classList.add('errorInput');
+      lastName.classList.add('errorInput');
+      email.classList.add('errorInput');
+      password.classList.add('errorInput');
+    }
+    btnCloseModal.addEventListener('click', () => {
+      modal.close();
+      changeRoute('#/login');
     });
-   
- return containerSignup;
+  });
+  return containerSignup;
 };
 
 
