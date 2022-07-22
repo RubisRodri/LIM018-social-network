@@ -1,3 +1,6 @@
+import { registerUser, registerGoogle } from '../index.js';
+
+
 export const wall = () => {
   const viewWall = `
     <header class="header-wall flex-wall">
@@ -36,6 +39,7 @@ export const wall = () => {
   const containerWall = document.createElement('div');
   containerWall.innerHTML = viewWall;
   containerWall.className = 'view-wall';
+  
 
   return containerWall;
 };

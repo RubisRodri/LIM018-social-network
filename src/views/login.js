@@ -1,4 +1,4 @@
-import { loginUser } from '../index.js';
+import { loginUser, registerGoogle } from '../index.js';
 import { changeRoute } from '../routes/router.js';
 
 export const login = () => {
@@ -14,7 +14,6 @@ export const login = () => {
         <input type="password" class="login-password input-paw" placeholder="Contraseña">
         <div class="login-errortext"></div>
         <button class="login-btnLogin btn-paw"><a class="login-btnLogin-ref">Iniciar Sesión</a></button>
-
       </form>
       <p class="login-text">O bien ingresa con</p>
       <img class="login-google-img" src="pictures/google.png">
@@ -30,10 +29,15 @@ export const login = () => {
   const email = containerLogin.querySelector('.login-email');
   const password = containerLogin.querySelector('.login-password');
   const errorText = containerLogin.querySelector('.login-errortext');
-
-  btnLogin.addEventListener('click', () => {
+  // ingreso con google
+  const btnGoogle = containerLogin.querySelector('.login-google-img');
+  
+// escuchador para ingresar usuarios existentes
+  btnLogin.addEventListener('click', (e) => {
+    e.preventDefault();
     if (email.value !== '' || password.value !== '') {
       loginUser(email.value, password.value);
+      console.log(loginUser);
         /*.then((userCredential) => {
           // Signed in
           const user = userCredential.user;
@@ -58,6 +62,9 @@ export const login = () => {
       password.classList.add('errorInput');
     }
   });
-
+    btnGoogle.addEventListener('click', () =>{
+      registerGoogle();
+    })
   return containerLogin;
 };
+

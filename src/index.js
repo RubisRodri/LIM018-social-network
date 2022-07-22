@@ -4,13 +4,22 @@ import { changeRoute } from './routes/router.js';
 import {
   doc,
   setDoc,
+  getFirestore,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
   auth,
-  db,
+  db, 
+  provider,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  collection,
+  addDoc
 } from './firebase.js';
 // eslint-disable-next-line import/no-unresolved
+
+//creamos funcion que permite a los usuarios nuevos registrarse
 export const registerUser = (name, lastName, email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -41,13 +50,13 @@ export const registerUser = (name, lastName, email, password) => {
       console.log(user);
 
       // termina
-      //changeRoute('#/login');
+      // changeRoute('#/login');
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorMessage);// eslint-disable-next-line no-alert
-      alert(errorCode, errorMessage);
+      alert('Los datos ingresados no son válidos.');
     });
 };
 
@@ -79,33 +88,85 @@ export const loginUser = (email, password) => {
       // Signed in
       const user = userCredential.user;
       // ...
-      console.log(user);
+     // console.log(user);
       if (user.emailVerified) {
         changeRoute('#/wall');
       } else {
-        alert('Primero verifica email');
+        alert('Aún no has verificado tu correo electrónico.');
       }
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert('Usuario y/o contraseña incorrectos');
+      alert('Usuario y/o contraseña incorrectos.');
     });
 };
 
-   /* const observer = () => {
+//observador de usuarios activos
+
+export const observer = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
         console.log('Usuario activo');
-        changeRoute('#/wall');
+        changeRoute('#/login');
         // ...
       } else {
         // User is signed out
         console.log('No existe usuario activo');
       }
     });
+  
 };
 
- observer();
-*/
+observer();
+
+
+
+// comenzando con la autorizacion con google.
+ 
+export const registerGoogle = () => {
+    signInWithPopup( auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // ...
+        changeRoute('#/wall');
+        console.log(user.displayName);
+       // console.log(nameUsuario);
+        return user;
+
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+        console.log("este es un mensaje de error");
+      })
+    
+};   
+
+  console.log(nameUsuario);
+
+
+
+  /*export const datosUser = () => {
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        first: "Ada",
+        last: "Lovelace",
+        born: 1815
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+  */
