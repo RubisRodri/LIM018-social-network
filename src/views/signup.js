@@ -46,11 +46,10 @@ export const signup = () => {
     e.preventDefault();
     if (email.value !== '' || password.value !== '' || name.value !== '' || lastName.value !== '') {
       registerUser(name.value, lastName.value, email.value, password.value);
-      console.log(registerUser);
-      modal.showModal();
       // btnCloseModal.addEventListener('click', () => {
       //   modal.close();
       // });
+      modal.showModal();
     } else {
       errorText.innerHTML = 'Los datos ingresados no son válidos.';
       name.classList.add('errorInput');
@@ -69,11 +68,6 @@ export const signup = () => {
 
 
    
-
-
-
-
-
 
 
 

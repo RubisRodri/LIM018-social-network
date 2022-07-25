@@ -1,4 +1,6 @@
-import { registerUser, registerGoogle } from '../index.js';
+import { exit, observer, saveComment, saveWall  } from '../index.js';
+import { auth, docSnap, getDocs, onSnapshot, collection, db } from '../firebase.js';
+//import { async } from 'regenerator-runtime';
 
 
 export const wall = () => {
@@ -8,7 +10,7 @@ export const wall = () => {
         <img class="logo-img logo-img-wall" src="pictures/paw.png">
         <p class="logo-text">PawProtection</p>
       </section>
-      <a href="#/login" class="btn-exit">Salir</a>
+      <a class="btn-exit">Salir</a>
     </header>
 
     <section class="user">
@@ -36,11 +38,68 @@ export const wall = () => {
     </section>
   `;
 
+ 
+  saveWall();
+  observer();
+ 
   const containerWall = document.createElement('div');
   containerWall.innerHTML = viewWall;
   containerWall.className = 'view-wall';
   
 
+  const btnSignOut = containerWall.querySelector('.btn-exit');
+  const greeting = containerWall.querySelector('.user-text');
+  const newPost = containerWall.querySelector('.post-btnpost');
+  let postWall = containerWall.querySelector('.post-editableText');
+
+   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
+  // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
+  console.log(auth.currentUser);
+  btnSignOut.addEventListener('click', () => {
+    exit();
+  });
+
+
+  const prueba = () => {
+    //querySnapshot.forEach((doc) => {
+    //  greeting.innerHTML = `¡Hola, ${doc.data().Name}!`;
+    //  console.log(`${doc.id} => ${doc.data().Name}`);
+    //});
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data("Name"));
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  };
+  prueba();
+  
+ 
+  newPost.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    if (postWall.value == ''){
+
+      alert('Aun no has escrito nada');
+
+    } if(postWall.value != ''){
+      
+      saveComment(postWall.value);
+      
+    
+    };
+
+})
   return containerWall;
 };
+  
 
+
+
+
+/*
+  addPost(postWall);//ejecutar la funcion de index js para subir a la base de datos
+console.log('postWall',postWall)
+}
+})
+*/

@@ -9,91 +9,85 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   auth,
-  db, 
-  provider,
-  signInWithPopup,
+  db,
+  Timestamp,
+  query,
   GoogleAuthProvider,
-  onAuthStateChanged,
+  signInWithPopup,
+  provider,
+  user,
   collection,
-  addDoc
+  addDoc,
+  getDoc,
+  querySnapshot,
+  onSnapshot,
+  where,
+  getDocs,
+  onAuthStateChanged,
+  signOut,
+  //user,
 } from './firebase.js';
+//import { async } from 'regenerator-runtime';
 // eslint-disable-next-line import/no-unresolved
+
 
 //creamos funcion que permite a los usuarios nuevos registrarse
 export const registerUser = (name, lastName, email, password) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in
-      const user = userCredential.user;
-      // eslint-disable-next-line no-console
-      // console.log(user);
+      //const user = userCredential.user;
       // Añadir datos al firestore con diferente ID
-      // addDoc(collection(db, 'users'), {
-      //   Name: name,
-      //   LastName: lastName,
-      //   Email: email,
-      //   Password: password,
-      // });
+       addDoc(collection(db, 'users'), {
+         Name: name,
+         LastName: lastName,
+         Email: email,
+         Password: password, 
+        });
       // Añadir datos al firestore con mismo ID
-      setDoc(doc(db, 'users', user.uid), {
-        Name: name,
-        LastName: lastName,
-        Email: email,
-        Password: password,
-      });
+      //setDoc(doc(db, 'users', user.uid), {
+        //Name: name,
+        //LastName: lastName,
+        //Email: email,
+        //Password: password,
+      //});
 
       // Si el usuario verifico mail puede ingresar al wall
-      sendEmailVerification(auth.currentUser)
-        .then(() => {
-          console.log('enviando correo');
-        });
+      // (estará comentado porque no tenemos muchos correos reales)
+      // sendEmailVerification(auth.currentUser)
+      //   .then(() => {
+      //     console.log('enviando correo');
+      //   });
       console.log(user);
 
       // termina
       // changeRoute('#/login');
+      // return user;
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorMessage);// eslint-disable-next-line no-alert
       alert('Los datos ingresados no son válidos.');
+      // return error;
     });
 };
 
 
-
- //metodo de acceso a usuario existente
-
-
- /*export const userExiting = (email, password) =>{
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
-        // ...
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-    })
-};
-*/
-// colocando el observador para saber cuando el usuario ingresa a nuestra web.
-
+//funcion iniciar sesion con correo registrado
 
 export const loginUser = (email, password) => {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in
-      const user = userCredential.user;
-      // ...
-     // console.log(user);
-      if (user.emailVerified) {
-        changeRoute('#/wall');
-      } else {
-        alert('Aún no has verificado tu correo electrónico.');
-      }
+      console.log("userCredential", userCredential)
+      const { user } = userCredential;
+      console.log(user);
+
+      changeRoute('#/wall');
+      // if (user.emailVerified) {
+      //   changeRoute('#/wall');
+      // }
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -102,71 +96,146 @@ export const loginUser = (email, password) => {
     });
 };
 
-//observador de usuarios activos
-
-export const observer = () => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log('Usuario activo');
-        changeRoute('#/login');
-        // ...
-      } else {
-        // User is signed out
-        console.log('No existe usuario activo');
-      }
+export const registerGoogle = () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      //const { user } = userCredential;// le estamos dando el valor de usercredential 
+      // setDoc(doc(db, 'users', user.uid), {
+      //   Name: user.name,
+      //   LastName: user.lastName,
+      //   Email: user.email,
+      // });
+      changeRoute('#/wall');
+    // ...
+    }).catch((error) => {
+    // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      //The email of the user's account used.
+      //const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
     });
-  
 };
 
-observer();
 
 
+export const observer = () => {
+  onAuthStateChanged(auth, (activeUser) => {
+    if (activeUser) {
+      // console.log(user);
+      const uid = activeUser.uid;
+      console.log('Usuario activo', uid);
 
-// comenzando con la autorizacion con google.
- 
-export const registerGoogle = () => {
-    signInWithPopup( auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // ...
-        changeRoute('#/wall');
-        console.log(user.displayName);
-       // console.log(nameUsuario);
-        return user;
+      // **jalando nombre de firestore
+      const docRef = doc(db, 'users', uid);
+      const docSnap = getDoc(docRef);
+      docSnap
+        .then((result) => {
+          const nameUser = result.data().Name;
+          console.log(nameUser);
+          localStorage.setItem('nameUser', nameUser);
+          //printTitle();
+        })
+        .catch((err) => {
+         // console.log(err);
+          //return err;
+        });
+      // ** acaá termina
 
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-        console.log("este es un mensaje de error");
-      })
-    
-};   
-
-  console.log(nameUsuario);
-
-
-
-  /*export const datosUser = () => {
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        first: "Ada",
-        last: "Lovelace",
-        born: 1815
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+      // if (docSnap.exists()) {
+      //   console.log('Document data:', docSnap.data());
+      // } else {
+      //   // doc.data() will be undefined in this case
+      //   console.log('No such document!');
+      // }
+      // ...
+    } else {
+      // User is signed out
+      console.log('No existe usuario activo');
     }
+    // console.log(user);
+  });
+};
+
+export const exit = () => {
+  signOut(auth).then(() => {
+    changeRoute('#/login');
+  }).catch((error) => {
+    console.log(error);
+  });
+};
+
+
+
+// funcion para guardar comentarios en el wall
+
+export const saveComment = (comment, name) => {
+  addDoc(collection(db, 'comments'), {comment, name})
+};
+
+// tratando de hacer una base de datos con mas descripciones
+/*export const addPost = (name, userId, likes, likesCounter) => {            // Add a new document with a generated id.
+
+  //const date = Timestamp.fromDate(new Date());
+  //const name = auth.currentUser.displayName;
+  //const userId = auth.currentUser.uid;
+  //const likes = [];
+  //const likesCounter = 0;
+   addDoc(collection(db,'posts'), {name, userId, likes, likesCounter }); //guardamos la coleccion posts
+};
+*/
+
+//probando para listar la colleccion.
+
+//export const getComment = () => getDocs(collection(db, 'comments'), (comment))
+  
+
+
+/*const q = query(collection(db, "cities"), where("state", "==", "CA"));
+const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  const cities = [];
+  querySnapshot.forEach((doc) => {
+      cities.push(doc.data().name);
+  });
+  console.log("Current cities in CA: ", cities.join(", "));
+});
+*/
+/*export const readPost = () => {
+
+  const q = query(collection(db, 'comments'), orderBy('date', 'desc'));//query consulta o lee la base de datos de firebase
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => { //onSnapshot escucha los elementos del documento 
+    const comment = [];
+    querySnapshot.forEach((doc) => { //QuerySnapshot accede a los objetos que llama de doc por medio del array
+      console.log('documentos', doc)
+        comment.push(doc.data());
+      });
+    });
+  
   };
-  */
+*/
+// collection ref
+
+
+//get collection
+
+export const saveWall = () =>{
+const colRef = collection(db,'comments')
+  getDocs(colRef)
+  .then((onSnapshot) =>{
+  //console.log(onSnapshot.docs);
+  let comentarios =[];
+  onSnapshot.docs.forEach((doc) =>{
+  comentarios.push({...doc.data(), id:doc.id})
+  console.log(comentarios)
+  
+    })
+  })
+};
