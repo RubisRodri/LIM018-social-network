@@ -23,6 +23,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
 
 // Your web app's Firebase configuration
@@ -80,5 +81,5 @@ export {
   getDocs,
   querySnapshot,
   signOut,
-  //user,
+  updateProfile,
 };

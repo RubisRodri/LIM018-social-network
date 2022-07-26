@@ -62,6 +62,7 @@ export const signup = () => {
       changeRoute('#/login');
     });
   });
+
   return containerSignup;
 };
 
