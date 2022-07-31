@@ -11,6 +11,7 @@ import {
   query,
   where,
   collection,
+  deleteDoc,
   addDoc,
   getDocs,
 } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
@@ -53,7 +54,7 @@ const docRef = doc(db, 'users', 'Name');
 const docSnap = await getDoc(docRef);
 const querySnapshot = await getDocs(collection(db, 'users'));
 const user = auth.currentUser;// autentifica el usuario
-//const user = auth.currentUser;
+
 
 export {
   doc,
@@ -81,5 +82,6 @@ export {
   getDocs,
   querySnapshot,
   signOut,
+  deleteDoc,
   updateProfile,
 };

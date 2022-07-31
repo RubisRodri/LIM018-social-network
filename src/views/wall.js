@@ -1,5 +1,6 @@
-import { exit, saveComment } from '../index.js';
-import { auth, collection, db, getDocs } from '../firebase.js';
+import { exit, saveComment, deleteComment } from '../index.js';
+import { auth, collection, db, doc, getDocs } from '../firebase.js';
+
 
 export const wall = () => {
   const viewWall = `
@@ -18,22 +19,15 @@ export const wall = () => {
 
     <section class="post flex">
       <textarea name="textarea" class="post-editableText" rows="4" cols="10" placeholder="Cuéntanos..."></textarea>
-      <img class="post-btnpost" src="pictures/send.png">
+      <img class="post-btnpost" src="pictures/send.png"></img>
     </section>
 
     <section class="published-posts flex">
-      <div class="published-posts-container">
-        <!--<div class="published-posts-box"></div>
-              <select class="published-posts-btn">
-                <option value="edit">Editar</option>
-                <option value="delete">Eliminar</option>
-              </select>-->
-      </div>
-      <!--<div class="published-posts-likes flex-wall">
-        <img class="published-posts-likes-img" src="pictures/heart.png">
-        <p class="published-posts-likes-number">30</p>
-      </div>-->
-    </section>
+       <div class="published-posts-container">
+          <div class="published-posts-box">
+          </div>
+        </div>
+     </section>   
   `;
 
   //observer();
@@ -47,12 +41,87 @@ export const wall = () => {
   const commentPost = containerWall.querySelector('.post-editableText');
   const btnPostComment = containerWall.querySelector('.post-btnpost');
   const publishedPostsContainer = containerWall.querySelector('.published-posts-container');
+  
+    
+  //const createDiv = containerWall.querySelector('.published-posts flex');
+ 
 
   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
-  // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
+ 
+
+  function firstLoad() {
+    const colRef = collection(db, 'comments');
+    let posts = [];
+    getDocs(colRef)
+      .then((onSnapshot) => {
+        publishedPostsContainer.innerHTML = "";
+        onSnapshot.docs.forEach((document) => {
+          //posts.push({ ...doc.data(), id: doc.id });
+          posts.push({ 
+            name: document.data().name,
+            post: document.data().comment,
+            id: document.id, 
+            date: document.data().date});
+          //createDivs(document.data().comment, document.data().name);
+           const printPost = `
+          <section class="post flex">
+            <div class="container-post-name">${document.data().name}</div>
+          </section>
+
+          <section>
+            <div class="container-post">${document.data().comment}</div> 
+            <button class="edit">Editar</button>
+            <button class="btn-delete" data-id="${document.id}">Eliminar</button>
+           </section>
+           
+          <div class="containerLikes">
+             <img class="published-posts-likes-img" src="pictures/heart.png"></img>
+             <p class="published-posts-likes-number">30</p>
+          </div>`;
+
+         publishedPostsContainer.innerHTML += printPost;
+       
+        });
+        const deletePost = publishedPostsContainer.querySelectorAll('.btn-delete');
+        deletePost.forEach( btn =>{
+         btn.addEventListener('click', ({target:{dataset}}) =>{
+           const confirmDelete = confirm ("Estas seguro de eliminar este post");
+           if(confirmDelete === true){
+            deleteComment(dataset.id);
+           }
+         }); 
+         
+       });
+      });   
+  };
+
+  firstLoad();
+  
+
+  btnPostComment.addEventListener('click', () => {
+    if (commentPost.value !== '') {
+      //createDivs(commentPost.value, auth.currentUser.displayName);
+      saveComment(commentPost.value, auth.currentUser.displayName);
+      firstLoad();
+    
+      
+      commentPost.value = '';
+    }
+  });
+
+  btnSignOut.addEventListener('click', () => {
+    exit();
+  });
+ 
+
+  return containerWall;
+  };
+  
+
+   // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
   // console.log(auth.currentUser.email);
   // getName();
-  function handlingLikes(active) {
+ /* function handlingLikes(active) {
     let counter = 0;
     if (active === true) {
       counter++;
@@ -61,8 +130,9 @@ export const wall = () => {
     }
     return counter;
   }
-
-  function createDivs(post, name) {
+*/
+// revisar con jannery para eliminar esto
+  /*function createDivs(post, name) {
     const containerName = document.createElement('div');
     const containerPost = document.createElement('div');
     const containerLikes = document.createElement('div');
@@ -96,45 +166,4 @@ export const wall = () => {
       // countLikes.toggleAttribute(countLikes);
     });
   }
-
-  function firstLoad() {
-    const colRef = collection(db, 'comments');
-    let posts = [];
-    getDocs(colRef)
-      .then((onSnapshot) => {
-        onSnapshot.docs.forEach((document) => {
-          //posts.push({ ...doc.data(), id: doc.id });
-          posts.push({ name: document.data().name, post: document.data().comment });
-          createDivs(document.data().comment, document.data().name);
-        });
-      });
-  }
-
-  firstLoad();
-
-  btnPostComment.addEventListener('click', () => {
-    if (commentPost.value !== '') {
-      createDivs(commentPost.value, auth.currentUser.displayName);
-      saveComment(commentPost.value, auth.currentUser.displayName);
-
-      commentPost.value = '';
-    }
-  });
-
-  btnSignOut.addEventListener('click', () => {
-    exit();
-  });
-
-  return containerWall;
-};
-  
-
-
-
-
-/*
-  addPost(postWall);//ejecutar la funcion de index js para subir a la base de datos
-console.log('postWall',postWall)
-}
-})
-*/
+ */

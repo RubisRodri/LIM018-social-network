@@ -25,6 +25,7 @@ import {
   getDocs,
   onAuthStateChanged,
   signOut,
+  deleteDoc,
   updateProfile,
   //user,
 } from './firebase.js';
@@ -129,12 +130,50 @@ export const registerGoogle = () => {
 
 // funcion para crear una nueva colleccion
 
-export const saveComment = (comment, name) => {
+/*export const saveComment = (comment, name) => {
   const date = new Date();
   addDoc(collection(db, 'comments'), {comment, name, date})
 };
+*/
 
+export const saveComment = async (comment) => {  // Add a new document with a generated id.
 
+  const date = Timestamp.fromDate(new Date());
+  const name = auth.currentUser.displayName;
+  const userId = auth.currentUser.uid;
+  const likes = [];
+  const likesCounter = 0;
+  await addDoc(collection(db, 'comments'), { comment, date, name, userId, likes, likesCounter });
+
+};
+
+// funcion para listar los comentarios
+
+/*
+export const readcomments = () => {
+
+  const q = query(collection(db, 'comments'))
+
+  onSnapshot(q, (querySnapshot) => { //onSnapshot escucha los elementos del documento 
+    const boxPost = [];
+    console.log(boxPost);
+    querySnapshot.forEach((doc) => { //QuerySnapshot accede a los objetos que llama de doc por medio del array
+      //console.log('documentos', doc)
+      boxPost.push({
+        id: doc.id,
+        datepost: Date.now(),
+        data: doc.data(),
+        comment: doc.data().comment,
+        date: doc.data().date,
+        likes: [],
+        likesCounter: 0
+      });
+    });
+    printPosts(boxPost);
+    return boxPost;
+  });
+};
+*/
 // funcion para salir
 
 export const exit = () => {
@@ -144,6 +183,66 @@ export const exit = () => {
     console.log(error);
   });
 };
+
+
+//funcion para Borrar los Datos
+export const deleteComment = async(id) => {
+  await deleteDoc(doc(db, 'comments', id))
+}
+ console.log(deleteComment);
+
+
+
+
+
+
+/*
+// Editar datos
+export const editPost = async (id, description) => {
+  const refreshPost = doc(db, 'posts', id);
+  await updateDoc(refreshPost, {
+    description: description,
+  });
+};
+// Dar likes y contador de likes
+export const likePost = async (id, userLike) => {
+  const likeRef = doc(db, 'posts', id);//accediendo a la colleccion de los posts
+  const docSnap = await getDoc(likeRef);//estamos trayendo un post especifico con getDoc
+  const postData = docSnap.data();//nos permite agregar esta nueva data a cualquier elemneto de Dom
+  const likesCount = postData.likesCounter;
+
+  if (postData.likes.includes(userLike)) {
+    await updateDoc(likeRef, {
+      likes: arrayRemove(userLike),
+      likesCounter: likesCount - 1,
+    });
+  } else {
+    await updateDoc(likeRef, {
+      likes: arrayUnion(userLike),
+      likesCounter: likesCount + 1,
+    });
+  }
+};
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
