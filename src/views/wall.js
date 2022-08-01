@@ -1,4 +1,4 @@
-import { exit, saveComment, deleteComment } from '../index.js';
+import { exit, saveComment, deleteComment, getComment, updateComment } from '../index.js';
 import { auth, collection, db, doc, getDocs } from '../firebase.js';
 
 
@@ -41,7 +41,8 @@ export const wall = () => {
   const commentPost = containerWall.querySelector('.post-editableText');
   const btnPostComment = containerWall.querySelector('.post-btnpost');
   const publishedPostsContainer = containerWall.querySelector('.published-posts-container');
-  
+  let editStatus = false;
+  let id = "";
     
   //const createDiv = containerWall.querySelector('.published-posts flex');
  
@@ -68,9 +69,9 @@ export const wall = () => {
             <div class="container-post-name">${document.data().name}</div>
           </section>
 
-          <section>
-            <div class="container-post">${document.data().comment}</div> 
-            <button class="edit">Editar</button>
+          <section id = container-comments>
+            <div class="container-post" id="container-post">${document.data().comment}</div> 
+            <button class="btn-edit" data-id="${document.id}">Editar</button>
             <button class="btn-delete" data-id="${document.id}">Eliminar</button>
            </section>
            
@@ -90,8 +91,23 @@ export const wall = () => {
             deleteComment(dataset.id);
            }
          }); 
+        });
+
+        const editPost = publishedPostsContainer.querySelectorAll('.btn-edit');  
+          editPost.forEach (btn =>{
+             btn.addEventListener('click', async (e) =>{
+              console.log(editPost);
+              const doc = await getComment(e.target.dataset.id)
+              const docEdit= doc.data();
+
+              commentPost.value = docEdit.comment
+              editStatus = true;
+              id = e.target.dataset.id;
+
+             })
+          })
          
-       });
+      
       });   
   };
 
@@ -101,10 +117,17 @@ export const wall = () => {
   btnPostComment.addEventListener('click', () => {
     if (commentPost.value !== '') {
       //createDivs(commentPost.value, auth.currentUser.displayName);
-      saveComment(commentPost.value, auth.currentUser.displayName);
-      firstLoad();
-    
+
+      if (!editStatus){
+        saveComment(commentPost.value, auth.currentUser.displayName);
+      }else{
+        updateComment( id,
+          {comment : commentPost.value})
+        editStatus = false;
+      }
       
+     // firstLoad();
+
       commentPost.value = '';
     }
   });

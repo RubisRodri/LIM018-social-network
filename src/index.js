@@ -26,6 +26,7 @@ import {
   onAuthStateChanged,
   signOut,
   deleteDoc,
+  updateDoc,
   updateProfile,
   //user,
 } from './firebase.js';
@@ -189,12 +190,16 @@ export const exit = () => {
 export const deleteComment = async(id) => {
   await deleteDoc(doc(db, 'comments', id))
 }
- console.log(deleteComment);
+ //console.log(deleteComment);
 
+// para consultar un solo dato
 
+export const getComment = (id) => getDoc(doc(db,'comments', id));
 
+// para editar un documento.
 
-
+export const updateComment = (id, newFields) =>
+ updateDoc(doc(db,'comments', id), newFields);
 
 /*
 // Editar datos
@@ -204,6 +209,17 @@ export const editPost = async (id, description) => {
     description: description,
   });
 };
+
+
+
+
+
+
+
+
+
+
+
 // Dar likes y contador de likes
 export const likePost = async (id, userLike) => {
   const likeRef = doc(db, 'posts', id);//accediendo a la colleccion de los posts
@@ -294,7 +310,7 @@ const unsubscribe = onSnapshot(q, (querySnapshot) => {
 
 //get collection
 
-export const saveWall = () =>{
+ /*export const saveWall = () =>{
 const colRef = collection(db,'comments')
   getDocs(colRef)
   .then((onSnapshot) =>{
@@ -307,7 +323,7 @@ const colRef = collection(db,'comments')
   })
 })
 };
-
+*/
 
 /*export const observer = () => {
   onAuthStateChanged(auth, (activeUser) => {
