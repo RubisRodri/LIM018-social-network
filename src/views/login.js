@@ -50,8 +50,13 @@ export const login = () => {
   });
 
   btnGoogle.addEventListener('click', () => {
-    registerGoogle();
-  });
+    registerGoogle()
+    
+     
+    //console.log(user.phothoURL)
+     })
+    
+  
 
   return containerLogin;
 };

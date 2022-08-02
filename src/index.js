@@ -109,6 +109,8 @@ export const registerGoogle = () => {
       const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
+      //console.log(user.photoURL);
+      //updateUser(user);
       //const { user } = userCredential;// le estamos dando el valor de usercredential 
       // setDoc(doc(db, 'users', user.uid), {
       //   Name: user.name,

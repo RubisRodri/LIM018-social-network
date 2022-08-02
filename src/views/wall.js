@@ -1,4 +1,211 @@
-import { exit, saveComment, deleteComment, getComment, updateComment } from '../index.js';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// esta es mi version revisar en la oh.
+/*import { exit, saveComment, deleteComment, getComment, updateComment } from '../index.js';
 import { auth, collection, db, doc, getDocs } from '../firebase.js';
 
 
@@ -13,7 +220,7 @@ export const wall = () => {
     </header>
 
     <section class="user">
-      <img class="user-img" src="pictures/user.png">
+      <img class="user-img" src="pictures/user.png"></img>
       <p class="user-text">¡Hola, Guillermo Morgado!</p>
     </section>
 
@@ -41,14 +248,18 @@ export const wall = () => {
   const commentPost = containerWall.querySelector('.post-editableText');
   const btnPostComment = containerWall.querySelector('.post-btnpost');
   const publishedPostsContainer = containerWall.querySelector('.published-posts-container');
+  const imageUser = containerWall.querySelector('.user-img');
   let editStatus = false;
   let id = "";
+  
     
   //const createDiv = containerWall.querySelector('.published-posts flex');
  
 
   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
- 
+  imageUser.src = 'https://lh3.googleusercontent.com/a-/AFdZucqj06YGvKNUL7uMt3ivzJDPzGk7wk1ndH5xSgVcAQ=s96-c';
+  console.log(auth.currentUser.photoURL);
+  
 
   function firstLoad() {
     const colRef = collection(db, 'comments');
@@ -89,6 +300,8 @@ export const wall = () => {
            const confirmDelete = confirm ("Estas seguro de eliminar este post");
            if(confirmDelete === true){
             deleteComment(dataset.id);
+            console.log(deleteComment);
+
            }
          }); 
         });
@@ -126,7 +339,7 @@ export const wall = () => {
         editStatus = false;
       }
       
-     // firstLoad();
+      firstLoad();
 
       commentPost.value = '';
     }
@@ -140,7 +353,7 @@ export const wall = () => {
   return containerWall;
   };
   
-
+*/
    // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
   // console.log(auth.currentUser.email);
   // getName();
