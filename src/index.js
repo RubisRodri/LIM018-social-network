@@ -1,3 +1,105 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* esto es lo que tenia
 // Import the functions you need from the SDKs you need
 // eslint-disable-next-line import/no-cycle
 import { changeRoute } from './routes/router.js';
@@ -137,7 +239,7 @@ export const registerGoogle = () => {
   const date = new Date();
   addDoc(collection(db, 'comments'), {comment, name, date})
 };
-*/
+
 
 export const saveComment = async (comment) => {  // Add a new document with a generated id.
 
@@ -152,7 +254,7 @@ export const saveComment = async (comment) => {  // Add a new document with a ge
 
 // funcion para listar los comentarios
 
-/*
+
 export const readcomments = () => {
 
   const q = query(collection(db, 'comments'))
@@ -176,7 +278,7 @@ export const readcomments = () => {
     return boxPost;
   });
 };
-*/
+
 // funcion para salir
 
 export const exit = () => {
@@ -203,7 +305,9 @@ export const getComment = (id) => getDoc(doc(db,'comments', id));
 export const updateComment = (id, newFields) =>
  updateDoc(doc(db,'comments', id), newFields);
 
-/*
+ 
+
+
 // Editar datos
 export const editPost = async (id, description) => {
   const refreshPost = doc(db, 'posts', id);
@@ -243,7 +347,7 @@ export const likePost = async (id, userLike) => {
 };
 */
 
-
+/*
 
 
 
