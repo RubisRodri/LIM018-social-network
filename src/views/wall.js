@@ -1,213 +1,5 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// esta es mi version revisar en la oh.
-/*import { exit, saveComment, deleteComment, getComment, updateComment } from '../index.js';
-import { auth, collection, db, doc, getDocs } from '../firebase.js';
-
+import { exit, saveComment, deletePost, updatePost } from '../index.js';
+import { auth, collection, db, getDocs, Timestamp } from '../firebase.js';
 
 export const wall = () => {
   const viewWall = `
@@ -248,158 +40,167 @@ export const wall = () => {
   const commentPost = containerWall.querySelector('.post-editableText');
   const btnPostComment = containerWall.querySelector('.post-btnpost');
   const publishedPostsContainer = containerWall.querySelector('.published-posts-container');
-  const imageUser = containerWall.querySelector('.user-img');
+  const imageProfile = containerWall.querySelector('.user-img');
+
   let editStatus = false;
-  let id = "";
-  
-    
-  //const createDiv = containerWall.querySelector('.published-posts flex');
- 
+  let likeStatus = false;
 
   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
-  imageUser.src = 'https://lh3.googleusercontent.com/a-/AFdZucqj06YGvKNUL7uMt3ivzJDPzGk7wk1ndH5xSgVcAQ=s96-c';
-  console.log(auth.currentUser.photoURL);
-  
+  imageProfile.src = auth.currentUser.photoURL;
+  // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
+  // console.log(auth.currentUser.email);
+  // getName();
+  firstLoad();
+
+  function createDivs(postData) {
+    // traerme los likes del post y mostrar su cantidad****listo
+    // agregar un listener al evento de click del boton de like para ****listo
+    // cuando le de click al boton aumente el numero de likes.
+    //  1. si la usuaria conectada no le ha dado like antes, se agregue su id al array de likes
+    //  2. si la usaurio conectada ya le dio like, se quita su id del array de likes
+    // se debe actualizar el post en firestore con el nuevo arreglo de likes resultante 
+    const idPost = postData.id
+    const name = postData.name
+    const post = postData.comment
+    const likes = postData.likes ?? []
+    //console.log(typeof likes)
+    console.log(likes)
+    let likesQty = likes.length
+    
+    
+    const container = document.createElement('div');
+    const containerName = document.createElement('div');
+    const containerPost = document.createElement('textarea');
+    // Variables para likes
+    const containerLikes = document.createElement('div');
+    const imgLikes = document.createElement('img');
+    const countLikes = document.createElement('p');
+    // Variables para editar
+    const btnEdit = document.createElement('button');
+    const btnEditText = document.createTextNode('Editar');
+    btnEdit.appendChild(btnEditText);
+    const btnDelete = document.createElement('button');
+    const btnDeleteText = document.createTextNode('Eliminar');
+    btnDelete.appendChild(btnDeleteText);
+
+    containerName.innerHTML = name;
+    containerPost.innerHTML = post;
+    containerPost.appendChild(containerName);
+    container.appendChild(containerName);
+    container.appendChild(containerPost);
+    // publishedPostsContainer.appendChild(containerName);
+    // publishedPostsContainer.appendChild(containerPost);
+    containerName.setAttribute('class', 'container-post-name');
+    containerPost.setAttribute('class', 'container-post');
+    containerPost.setAttribute('disabled', true);
+    container.setAttribute('id', idPost);
+    // para los likes
+    imgLikes.setAttribute('src', 'pictures/heart.png');
+    imgLikes.setAttribute('class', 'published-posts-likes-img');
+    containerLikes.setAttribute('class', 'containerLikes');
+    countLikes.setAttribute('class', 'published-posts-likes-number');
+    btnEdit.setAttribute('class', 'btn-edit-post');
+    btnEdit.setAttribute('data-id', idPost);
+    btnDelete.setAttribute('class', 'btn-delete-post');
+    btnDelete.setAttribute('data-id', idPost);
+    containerLikes.appendChild(imgLikes);
+    containerLikes.appendChild(countLikes);
+    containerLikes.appendChild(btnEdit);
+    containerLikes.appendChild(btnDelete);
+    // publishedPostsContainer.appendChild(containerLikes);
+    container.appendChild(containerLikes);
+    publishedPostsContainer.appendChild(container);
+    countLikes.innerHTML = likesQty ;
+
+    btnDelete.addEventListener('click', (event) => {
+      deletePost(event.target.dataset.id);
+      publishedPostsContainer.removeChild(container);
+    });
+
+    btnEdit.addEventListener('click', (e) => {
+      if (!editStatus) {
+        containerPost.disabled = false;
+        btnEdit.innerHTML = 'Actualizar';
+        editStatus = true;
+      } else {
+        updatePost(e.target.dataset.id, { comment: containerPost.value });
+        containerPost.disabled = true;
+        btnEdit.innerHTML = 'Editar';
+        editStatus = false;
+      }
+    });
+    
+   // esto es de Janne**** 
+    imgLikes.addEventListener('click', () => {
+      
+      const isincluded = likes.includes(auth.currentUser.uid);
+
+      if( isincluded ){
+        //sacar en la posicion especifica de un arreglo
+
+      }else{
+        likes.push(auth.currentUser.uid)
+        likesQty++
+
+
+      }
+      
+      updatePost( idPost, {likes:likes, likesCounter:likesQty}) 
+        
+      
+       
+      
+      // countLikes.toggleAttribute(countLikes);
+    });
+  }
+     /* Evento para dar likes
+  const likeButton = containerEmpty.querySelectorAll('.btn-like');//tomamos el valor del selector
+  likeButton.forEach((e) => {
+    e.addEventListener('click', () => {
+      const likeValue = e.value;
+      const userId = auth.currentUser.uid;
+      likePost(likeValue, userId);//guardamos los parametros para entregarselos a las funciones de index.js
+    });
+  }); 
+
+  */
+
+
+
+
 
   function firstLoad() {
     const colRef = collection(db, 'comments');
     let posts = [];
     getDocs(colRef)
       .then((onSnapshot) => {
-        publishedPostsContainer.innerHTML = "";
         onSnapshot.docs.forEach((document) => {
-          //posts.push({ ...doc.data(), id: doc.id });
-          posts.push({ 
-            name: document.data().name,
-            post: document.data().comment,
-            id: document.id, 
-            date: document.data().date});
-          //createDivs(document.data().comment, document.data().name);
-           const printPost = `
-          <section class="post flex">
-            <div class="container-post-name">${document.data().name}</div>
-          </section>
-
-          <section id = container-comments>
-            <div class="container-post" id="container-post">${document.data().comment}</div> 
-            <button class="btn-edit" data-id="${document.id}">Editar</button>
-            <button class="btn-delete" data-id="${document.id}">Eliminar</button>
-           </section>
-           
-          <div class="containerLikes">
-             <img class="published-posts-likes-img" src="pictures/heart.png"></img>
-             <p class="published-posts-likes-number">30</p>
-          </div>`;
-
-         publishedPostsContainer.innerHTML += printPost;
-       
+          const commentData = { id: document.id, ...document.data() };
+          // posts.push({ ...doc.data(), id: doc.id });
+          posts.push({ name: commentData.name, post: commentData.comment });
+          createDivs(commentData);
         });
-        const deletePost = publishedPostsContainer.querySelectorAll('.btn-delete');
-        deletePost.forEach( btn =>{
-         btn.addEventListener('click', ({target:{dataset}}) =>{
-           const confirmDelete = confirm ("Estas seguro de eliminar este post");
-           if(confirmDelete === true){
-            deleteComment(dataset.id);
-            console.log(deleteComment);
-
-           }
-         }); 
-        });
-
-        const editPost = publishedPostsContainer.querySelectorAll('.btn-edit');  
-          editPost.forEach (btn =>{
-             btn.addEventListener('click', async (e) =>{
-              console.log(editPost);
-              const doc = await getComment(e.target.dataset.id)
-              const docEdit= doc.data();
-
-              commentPost.value = docEdit.comment
-              editStatus = true;
-              id = e.target.dataset.id;
-
-             })
-          })
-         
-      
-      });   
-  };
-
-  firstLoad();
-  
+      });
+  }
 
   btnPostComment.addEventListener('click', () => {
     if (commentPost.value !== '') {
-      //createDivs(commentPost.value, auth.currentUser.displayName);
-
-      if (!editStatus){
-        saveComment(commentPost.value, auth.currentUser.displayName);
-      }else{
-        updateComment( id,
-          {comment : commentPost.value})
-        editStatus = false;
+      const date = Timestamp.fromDate(new Date());
+      const userId = auth.currentUser.uid;
+      const likes = [];
+      const likesCounter = 0;
+        saveComment(commentPost.value, auth.currentUser.displayName, date, userId, likes,likesCounter)
+          .then((result) => {
+            createDivs(commentPost.value, auth.currentUser.displayName, result.id);
+            commentPost.value = '';
+            console.log(result.id);
+          });
       }
-      
-      firstLoad();
-
-      commentPost.value = '';
-    }
   });
 
   btnSignOut.addEventListener('click', () => {
     exit();
   });
- 
 
   return containerWall;
-  };
-  
-*/
-   // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
-  // console.log(auth.currentUser.email);
-  // getName();
- /* function handlingLikes(active) {
-    let counter = 0;
-    if (active === true) {
-      counter++;
-    } else {
-      counter--;
-    }
-    return counter;
-  }
-*/
-// revisar con jannery para eliminar esto
-  /*function createDivs(post, name) {
-    const containerName = document.createElement('div');
-    const containerPost = document.createElement('div');
-    const containerLikes = document.createElement('div');
-    const imgLikes = document.createElement('img');
-    const countLikes = document.createElement('p');
-    containerName.innerHTML = name;
-    containerPost.innerHTML = post;
-    // containerPost.appendChild(containerName);
-    publishedPostsContainer.appendChild(containerName);
-    publishedPostsContainer.appendChild(containerPost);
-    containerName.setAttribute('class', 'container-post-name');
-    containerPost.setAttribute('class', 'container-post');
-    // para los likes
-    imgLikes.setAttribute('src', 'pictures/heart.png');
-    imgLikes.setAttribute('class', 'published-posts-likes-img');
-    containerLikes.setAttribute('class', 'containerLikes');
-    countLikes.setAttribute('class', 'published-posts-likes-number');
-    containerLikes.appendChild(imgLikes);
-    containerLikes.appendChild(countLikes);
-    publishedPostsContainer.appendChild(containerLikes);
-    imgLikes.addEventListener('click', () => {
-      imgLikes.id = 'on';
-      if (imgLikes.id === 'on') {
-        countLikes.innerHTML = handlingLikes(true);
-        imgLikes.id = 'off';
-      } else if (imgLikes.id === 'off') {
-        countLikes.innerHTML = handlingLikes(false);
-        imgLikes.id = 'on';
-      }
-      // dar y quitar likes usar toggle?
-      // countLikes.toggleAttribute(countLikes);
-    });
-  }
- */
+};

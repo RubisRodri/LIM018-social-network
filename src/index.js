@@ -1,105 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* esto es lo que tenia
 // Import the functions you need from the SDKs you need
 // eslint-disable-next-line import/no-cycle
 import { changeRoute } from './routes/router.js';
@@ -130,63 +28,50 @@ import {
   deleteDoc,
   updateDoc,
   updateProfile,
-  //user,
 } from './firebase.js';
 //import { async } from 'regenerator-runtime';
 // eslint-disable-next-line import/no-unresolved
-
-
-//creamos funcion que permite a los usuarios nuevos registrarse
-export const registerUser = (name, lastName, email, password) => {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in
-       const user = userCredential.user;
-       // console.log(user);
-       //añadir datos al firestore con diferentes id
-       //addDoc(collection(db, 'users'), {
-         //Name: name,
-         //LastName: lastName,
-         //Email: email,
-        // Password: password, 
-        //});
-        //añadir datos al firestore con mismo id
-    updateProfile(user,{
+export const registerUser = (name, lastName, email, password) => createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in
+    const user = userCredential.user;
+    // eslint-disable-next-line no-console
+    // console.log(user);
+    // Añadir datos al firestore con diferente ID
+    // addDoc(collection(db, 'users'), {
+    //   Name: name,
+    //   LastName: lastName,
+    //   Email: email,
+    //   Password: password,
+    // });
+    // Añadir datos al firestore con mismo ID
+    updateProfile(user, {
       displayName: `${name} ${lastName}`,
-    }) .then(() =>{
-      //profile update
-      //...
-    }).catch((error) =>{
-      //an error occurred
-      //...
+    }).then(() => {
+      // Profile updated!
+      // ...
+    }).catch((error) => {
+      // An error occurred
+      // ...
     });
-      setDoc(doc(db, 'users', user.uid), {
-         Name: name,
-         LastName: lastName,
-         Email: email,
-         Password: password, 
-        });
-      
+    setDoc(doc(db, 'users', user.uid), {
+      Name: name,
+      LastName: lastName,
+      Email: email,
+      Password: password,
+    });
 
-      // Si el usuario verifico mail puede ingresar al wall
-      // (estará comentado porque no tenemos muchos correos reales)
-      // sendEmailVerification(auth.currentUser)
-      //   .then(() => {
-      //     console.log('enviando correo');
-      //   });
-      console.log(user);
-      // termina
-      // changeRoute('#/login');
-      // return user;
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorMessage);// eslint-disable-next-line no-alert
-      alert('Los datos ingresados no son válidos.');
-      // return error;
-    });
-};
+    // Si el usuario verifico mail puede ingresar al wall
+    // (estará comentado porque no tenemos muchos correos reales)
+    // sendEmailVerification(auth.currentUser)
+    //   .then(() => {
+    //     console.log('enviando correo');
+    //   });
+    console.log(user);
+    // termina
+    // changeRoute('#/login');
+    // return user;
+  });
 
 
 //funcion iniciar sesion con correo registrado
@@ -233,53 +118,28 @@ export const registerGoogle = () => {
     });
 };
 
-// funcion para crear una nueva colleccion
+// export const saveComment = (comment, name) => {
+//   const date = new Date();
+//   addDoc(collection(db, 'comments'), { comment, name, date });
 
-/*export const saveComment = (comment, name) => {
-  const date = new Date();
-  addDoc(collection(db, 'comments'), {comment, name, date})
-};
+// };
 
-
-export const saveComment = async (comment) => {  // Add a new document with a generated id.
-
-  const date = Timestamp.fromDate(new Date());
-  const name = auth.currentUser.displayName;
-  const userId = auth.currentUser.uid;
-  const likes = [];
-  const likesCounter = 0;
-  await addDoc(collection(db, 'comments'), { comment, date, name, userId, likes, likesCounter });
-
-};
-
-// funcion para listar los comentarios
+//export const saveComment = (comment, name) => addDoc(collection(db, 'comments'), { comment, name });
 
 
-export const readcomments = () => {
+export const saveComment = (comment, name, date, userId, likes,
+   likesCounter) =>addDoc
+(collection(db, 'comments'), { comment, date, name, userId, likes, likesCounter });
 
-  const q = query(collection(db, 'comments'))
 
-  onSnapshot(q, (querySnapshot) => { //onSnapshot escucha los elementos del documento 
-    const boxPost = [];
-    console.log(boxPost);
-    querySnapshot.forEach((doc) => { //QuerySnapshot accede a los objetos que llama de doc por medio del array
-      //console.log('documentos', doc)
-      boxPost.push({
-        id: doc.id,
-        datepost: Date.now(),
-        data: doc.data(),
-        comment: doc.data().comment,
-        date: doc.data().date,
-        likes: [],
-        likesCounter: 0
-      });
-    });
-    printPosts(boxPost);
-    return boxPost;
-  });
-};
 
-// funcion para salir
+
+
+ //Funcion para editar datos
+export const updatePost = (id, newInput) => updateDoc(doc(db, 'comments', id), newInput);
+
+// Funcion para eliminar datos
+export const deletePost = (id) => deleteDoc(doc(db, 'comments', id));
 
 export const exit = () => {
   signOut(auth).then(() => {
@@ -290,43 +150,9 @@ export const exit = () => {
 };
 
 
-//funcion para Borrar los Datos
-export const deleteComment = async(id) => {
-  await deleteDoc(doc(db, 'comments', id))
-}
- //console.log(deleteComment);
-
-// para consultar un solo dato
-
-export const getComment = (id) => getDoc(doc(db,'comments', id));
-
-// para editar un documento.
-
-export const updateComment = (id, newFields) =>
- updateDoc(doc(db,'comments', id), newFields);
-
- 
 
 
-// Editar datos
-export const editPost = async (id, description) => {
-  const refreshPost = doc(db, 'posts', id);
-  await updateDoc(refreshPost, {
-    description: description,
-  });
-};
-
-
-
-
-
-
-
-
-
-
-
-// Dar likes y contador de likes
+/* Dar likes y contador de likes
 export const likePost = async (id, userLike) => {
   const likeRef = doc(db, 'posts', id);//accediendo a la colleccion de los posts
   const docSnap = await getDoc(likeRef);//estamos trayendo un post especifico con getDoc
@@ -345,9 +171,8 @@ export const likePost = async (id, userLike) => {
     });
   }
 };
-*/
-
 /*
+
 
 
 
