@@ -48,28 +48,25 @@ export const wall = () => {
   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
   imageProfile.src = auth.currentUser.photoURL;
   // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
-  // console.log(auth.currentUser.email);
+  
   // getName();
   firstLoad();
 
   function createDivs(postData) {
-    // traerme los likes del post y mostrar su cantidad****listo
-    // agregar un listener al evento de click del boton de like para ****listo
-    // cuando le de click al boton aumente el numero de likes.
-    //  1. si la usuaria conectada no le ha dado like antes, se agregue su id al array de likes
-    //  2. si la usaurio conectada ya le dio like, se quita su id del array de likes
-    // se debe actualizar el post en firestore con el nuevo arreglo de likes resultante 
+    const date = postData.date.toDate()
     const idPost = postData.id
     const name = postData.name
     const post = postData.comment
-    const likes = postData.likes ?? []
+    const likes = postData.likes ?? [];
     //console.log(typeof likes)
-    console.log(likes)
+    //console.log(idPost)
     let likesQty = likes.length
+    //console.log(date.toDate());
     
     
     const container = document.createElement('div');
     const containerName = document.createElement('div');
+    const publicationDate = document.createElement('div')
     const containerPost = document.createElement('textarea');
     // Variables para likes
     const containerLikes = document.createElement('div');
@@ -85,11 +82,14 @@ export const wall = () => {
 
     containerName.innerHTML = name;
     containerPost.innerHTML = post;
+    containerPost.innerHtml = date;
+    containerPost.appendChild(publicationDate);
     containerPost.appendChild(containerName);
     container.appendChild(containerName);
     container.appendChild(containerPost);
     // publishedPostsContainer.appendChild(containerName);
     // publishedPostsContainer.appendChild(containerPost);
+    containerPost.setAttribute('class', 'container-date')
     containerName.setAttribute('class', 'container-post-name');
     containerPost.setAttribute('class', 'container-post');
     containerPost.setAttribute('disabled', true);
@@ -110,7 +110,7 @@ export const wall = () => {
     // publishedPostsContainer.appendChild(containerLikes);
     container.appendChild(containerLikes);
     publishedPostsContainer.appendChild(container);
-    countLikes.innerHTML = likesQty ;
+    
 
     btnDelete.addEventListener('click', (event) => {
       deletePost(event.target.dataset.id);
@@ -134,36 +134,27 @@ export const wall = () => {
     imgLikes.addEventListener('click', () => {
       
       const isincluded = likes.includes(auth.currentUser.uid);
+      //console.log(isincluded);booleano
 
       if( isincluded ){
-        //sacar en la posicion especifica de un arreglo
+        let foundLike = likes.findIndex(e => e === auth.currentUser.uid);
+        likes.splice(foundLike, 1);
+        likesQty--;
+        console.log('diste dislike');
 
       }else{
         likes.push(auth.currentUser.uid)
         likesQty++
-
-
+        console.log('diste like')
       }
-      
+      countLikes.innerHTML = likesQty;
       updatePost( idPost, {likes:likes, likesCounter:likesQty}) 
-        
-      
-       
       
       // countLikes.toggleAttribute(countLikes);
     });
+    countLikes.innerHTML = likesQty ;
   }
-     /* Evento para dar likes
-  const likeButton = containerEmpty.querySelectorAll('.btn-like');//tomamos el valor del selector
-  likeButton.forEach((e) => {
-    e.addEventListener('click', () => {
-      const likeValue = e.value;
-      const userId = auth.currentUser.uid;
-      likePost(likeValue, userId);//guardamos los parametros para entregarselos a las funciones de index.js
-    });
-  }); 
-
-  */
+ 
 
 
 
@@ -189,14 +180,22 @@ export const wall = () => {
       const userId = auth.currentUser.uid;
       const likes = [];
       const likesCounter = 0;
-        saveComment(commentPost.value, auth.currentUser.displayName, date, userId, likes,likesCounter)
-          .then((result) => {
-            createDivs(commentPost.value, auth.currentUser.displayName, result.id);
-            commentPost.value = '';
-            console.log(result.id);
-          });
-      }
+      saveComment(commentPost.value, auth.currentUser.displayName, date, userId, likes, likesCounter)
+        .then((result) => {
+          const commentData = { id: result.id, name: auth.currentUser.displayName, comment: commentPost.value}
+          createDivs(commentData);
+          commentPost.value = '';
+          console.log(result.id);
+        });
+    }
   });
+
+
+
+
+
+
+
 
   btnSignOut.addEventListener('click', () => {
     exit();
@@ -204,3 +203,26 @@ export const wall = () => {
 
   return containerWall;
 };
+
+
+
+
+
+
+
+
+/*btnPostComment.addEventListener('click', () => {
+  if (commentPost.value !== '') {
+    const date = Timestamp.fromDate(new Date());
+    const userId = auth.currentUser.uid;
+    const likes = [];
+    const likesCounter = 0;
+      saveComment(commentPost.value, auth.currentUser.displayName, date, userId, likes,likesCounter)
+        .then((result) => {
+          createDivs(commentPost.value, auth.currentUser.displayName, result.id);
+          commentPost.value = '';
+          console.log(result.id);
+        });
+    }
+});
+*/

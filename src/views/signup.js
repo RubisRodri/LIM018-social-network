@@ -1,4 +1,5 @@
 import { registerUser } from '../index.js';
+import { setDoc, updateDoc } from '../firebase.js';
 import { changeRoute } from '../routes/router.js';
 
 export const signup = () => {
@@ -46,9 +47,23 @@ export const signup = () => {
     e.preventDefault();
     if (email.value !== '' || password.value !== '' || name.value !== '' || lastName.value !== '') {
       registerUser(name.value, lastName.value, email.value, password.value)
-        .then((result) => {
-          modal.showModal();
-        })
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user)
+
+          setDoc(doc(db, 'users', user.uid), {
+            Name: name,
+            LastName: lastName,
+            Email: email,
+            Password: password,  
+          })
+
+          updateProfile(user, {
+            displayName: `${name} ${lastName}`
+            //modal.showModal();
+          })
+         
+        }) 
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;

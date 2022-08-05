@@ -32,46 +32,9 @@ import {
 //import { async } from 'regenerator-runtime';
 // eslint-disable-next-line import/no-unresolved
 export const registerUser = (name, lastName, email, password) => createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in
-    const user = userCredential.user;
-    // eslint-disable-next-line no-console
-    // console.log(user);
-    // Añadir datos al firestore con diferente ID
-    // addDoc(collection(db, 'users'), {
-    //   Name: name,
-    //   LastName: lastName,
-    //   Email: email,
-    //   Password: password,
-    // });
-    // Añadir datos al firestore con mismo ID
-    updateProfile(user, {
-      displayName: `${name} ${lastName}`,
-    }).then(() => {
-      // Profile updated!
-      // ...
-    }).catch((error) => {
-      // An error occurred
-      // ...
-    });
-    setDoc(doc(db, 'users', user.uid), {
-      Name: name,
-      LastName: lastName,
-      Email: email,
-      Password: password,
-    });
-
-    // Si el usuario verifico mail puede ingresar al wall
-    // (estará comentado porque no tenemos muchos correos reales)
-    // sendEmailVerification(auth.currentUser)
-    //   .then(() => {
-    //     console.log('enviando correo');
-    //   });
-    console.log(user);
-    // termina
-    // changeRoute('#/login');
-    // return user;
-  });
+ 
+   
+    
 
 
 //funcion iniciar sesion con correo registrado
@@ -130,9 +93,6 @@ export const registerGoogle = () => {
 export const saveComment = (comment, name, date, userId, likes,
    likesCounter) =>addDoc
 (collection(db, 'comments'), { comment, date, name, userId, likes, likesCounter });
-
-
-
 
 
  //Funcion para editar datos
