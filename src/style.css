@@ -220,6 +220,17 @@ a{
   padding-top: 7px;
 }
 
+.container-post-date{
+  width: 50%;
+  margin-left: 12%;
+  height: 10%;
+  color:black;
+  padding-left: 8px;
+  margin-right: 0px;
+  margin-top: 7px;
+}
+
+
 .containerLikes{
   display: flex;
   margin-left: 15%;

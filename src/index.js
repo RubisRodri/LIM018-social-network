@@ -1,256 +1,57 @@
 // Import the functions you need from the SDKs you need
 // eslint-disable-next-line import/no-cycle
-import { changeRoute } from './routes/router.js';
 import {
   doc,
-  setDoc,
-  getFirestore,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendEmailVerification,
   auth,
   db,
-  Timestamp,
-  query,
-  GoogleAuthProvider,
   signInWithPopup,
   provider,
   user,
   collection,
-  addDoc,
-  getDoc,
-  querySnapshot,
-  onSnapshot,
-  where,
-  getDocs,
-  onAuthStateChanged,
   signOut,
-  deleteDoc,
+  addDoc,
   updateDoc,
-  updateProfile,
-} from './firebase.js';
-//import { async } from 'regenerator-runtime';
-// eslint-disable-next-line import/no-unresolved
-export const registerUser = (name, lastName, email, password) => createUserWithEmailAndPassword(auth, email, password)
- 
-   
-    
+  orderBy,
+  query,
+  deleteDoc,
+} from "./firebase.js";
+// eslint-disable-next-line import/no-unresolved, max-len
+
+// funcion para que el usuario se registre por primera vez
+export const registerUser = (email, password) =>
+  createUserWithEmailAndPassword(auth, email, password);
+
+// funcion para pueda iniciar sesion un usuario registrado
+export const loginUser = (email, password) =>
+  signInWithEmailAndPassword(auth, email, password);
+
+// funcion para que pueda registrarse e ingresar con google
+export const registerGoogle = () => signInWithPopup(auth, provider);
+
+//funcion para que se guarden los comentarios que realizo en el post
+export const saveComment = (comment, name, date, userId, likes, likesCounter) =>
+  addDoc(collection(db, "comments"), {
+    comment,
+    date,
+    name,
+    userId,
+    likes,
+    likesCounter,
+  });
+
+// para ordenar los datos.
+
+//export const q = query(commentRef, orderBy ("date"))
 
 
-//funcion iniciar sesion con correo registrado
-
-export const loginUser = (email, password) => signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in
-      const user = "userCredential".user;
-      console.log(user);
-      changeRoute('#/wall');
-      // if (user.emailVerified) {
-      //   changeRoute('#/wall');
-      // }
-    });
-
-
-export const registerGoogle = () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-      //console.log(user.photoURL);
-      //updateUser(user);
-      //const { user } = userCredential;// le estamos dando el valor de usercredential 
-      // setDoc(doc(db, 'users', user.uid), {
-      //   Name: user.name,
-      //   LastName: user.lastName,
-      //   Email: user.email,
-      // });
-      changeRoute('#/wall');
-    // ...
-    }).catch((error) => {
-    // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      //The email of the user's account used.
-      //const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-    });
-};
-
-// export const saveComment = (comment, name) => {
-//   const date = new Date();
-//   addDoc(collection(db, 'comments'), { comment, name, date });
-
-// };
-
-//export const saveComment = (comment, name) => addDoc(collection(db, 'comments'), { comment, name });
-
-
-export const saveComment = (comment, name, date, userId, likes,
-   likesCounter) =>addDoc
-(collection(db, 'comments'), { comment, date, name, userId, likes, likesCounter });
-
-
- //Funcion para editar datos
-export const updatePost = (id, newInput) => updateDoc(doc(db, 'comments', id), newInput);
+// Funcion para editar datos
+export const updatePost = (id, newInput) =>
+  updateDoc(doc(db, "comments", id), newInput);
 
 // Funcion para eliminar datos
-export const deletePost = (id) => deleteDoc(doc(db, 'comments', id));
+export const deletePost = (id) => deleteDoc(doc(db, "comments", id));
 
-export const exit = () => {
-  signOut(auth).then(() => {
-    changeRoute('#/login');
-  }).catch((error) => {
-    console.log(error);
-  });
-};
-
-
-
-
-/* Dar likes y contador de likes
-export const likePost = async (id, userLike) => {
-  const likeRef = doc(db, 'posts', id);//accediendo a la colleccion de los posts
-  const docSnap = await getDoc(likeRef);//estamos trayendo un post especifico con getDoc
-  const postData = docSnap.data();//nos permite agregar esta nueva data a cualquier elemneto de Dom
-  const likesCount = postData.likesCounter;
-
-  if (postData.likes.includes(userLike)) {
-    await updateDoc(likeRef, {
-      likes: arrayRemove(userLike),
-      likesCounter: likesCount - 1,
-    });
-  } else {
-    await updateDoc(likeRef, {
-      likes: arrayUnion(userLike),
-      likesCounter: likesCount + 1,
-    });
-  }
-};
-/*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// tratando de hacer una base de datos con mas descripciones
-/*export const addPost = (name, userId, likes, likesCounter) => {            // Add a new document with a generated id.
-
-  //const date = Timestamp.fromDate(new Date());
-  //const name = auth.currentUser.displayName;
-  //const userId = auth.currentUser.uid;
-  //const likes = [];
-  //const likesCounter = 0;
-   addDoc(collection(db,'posts'), {name, userId, likes, likesCounter }); //guardamos la coleccion posts
-};
-*/
-
-//probando para listar la colleccion.
-
-//export const getComment = () => getDocs(collection(db, 'comments'), (comment))
-  
-
-
-/*const q = query(collection(db, "cities"), where("state", "==", "CA"));
-const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  const cities = [];
-  querySnapshot.forEach((doc) => {
-      cities.push(doc.data().name);
-  });
-  console.log("Current cities in CA: ", cities.join(", "));
-});
-*/
-/*export const readPost = () => {
-
-  const q = query(collection(db, 'comments'), orderBy('date', 'desc'));//query consulta o lee la base de datos de firebase
-
-  const unsubscribe = onSnapshot(q, (querySnapshot) => { //onSnapshot escucha los elementos del documento 
-    const comment = [];
-    querySnapshot.forEach((doc) => { //QuerySnapshot accede a los objetos que llama de doc por medio del array
-      console.log('documentos', doc)
-        comment.push(doc.data());
-      });
-    });
-  
-  };
-*/
-// collection ref
-
-
-//get collection
-
- /*export const saveWall = () =>{
-const colRef = collection(db,'comments')
-  getDocs(colRef)
-  .then((onSnapshot) =>{
-  //console.log(onSnapshot.docs);
-  let comentarios =[];
-  onSnapshot.docs.forEach((doc) =>{
-  comentarios.push({...doc.data(), id:doc.id})
-  console.log(comentarios)
-  
-  })
-})
-};
-*/
-
-/*export const observer = () => {
-  onAuthStateChanged(auth, (activeUser) => {
-    if (activeUser) {
-      // console.log(user);
-      const uid = activeUser.uid;
-      console.log('Usuario activo', uid);
-
-      // **jalando nombre de firestore
-      const docRef = doc(db, 'users', uid);
-      const docSnap = getDoc(docRef);
-      docSnap
-        .then((result) => {
-          const nameUser = result.data().Name;
-          console.log(nameUser);
-          localStorage.setItem('nameUser', nameUser);
-          //printTitle();
-        })
-        .catch((err) => {
-         // console.log(err);
-          //return err;
-        });
-      // ** acaá termina
-
-      // if (docSnap.exists()) {
-      //   console.log('Document data:', docSnap.data());
-      // } else {
-      //   // doc.data() will be undefined in this case
-      //   console.log('No such document!');
-      // }
-      // ...
-    } else {
-      // User is signed out
-      console.log('No existe usuario activo');
-    }
-    // console.log(user);
-  });
-};
-*/
+// funcion para salir
+export const exit = () => signOut(auth);
