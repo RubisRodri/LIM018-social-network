@@ -8,7 +8,7 @@ import {
   db,
   signInWithPopup,
   provider,
-  user,
+  //user,
   collection,
   signOut,
   addDoc,
@@ -44,7 +44,6 @@ export const saveComment = (comment, name, date, userId, likes, likesCounter) =>
 // para ordenar los datos.
 
 //export const q = query(commentRef, orderBy ("date"))
-
 
 // Funcion para editar datos
 export const updatePost = (id, newInput) =>

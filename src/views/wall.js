@@ -1,14 +1,6 @@
-import { exit, saveComment, deletePost, updatePost } from "../index.js";
-import {
-  auth,
-  collection,
-  db,
-  getDocs,
-  Timestamp,
-  query,
-  orderBy,
-} from "../firebase.js";
-import { changeRoute } from "../routes/router.js";
+import { exit, saveComment, deletePost, updatePost } from '../index.js';
+import { auth, collection, db, getDocs, querySnapshot, Timestamp, query, orderBy, doc } from '../firebase.js';
+import { changeRoute } from '../routes/router.js';
 
 export const wall = () => {
   const viewWall = `
@@ -19,240 +11,288 @@ export const wall = () => {
       </section>
       <a class="btn-exit">Salir</a>
     </header>
-
     <section class="user">
-      <img class="user-img" src="pictures/user.png"></img>
+      <img class="user-img" src="pictures/user.png">
       <p class="user-text">¡Hola, Guillermo Morgado!</p>
     </section>
-
     <section class="post flex">
       <textarea name="textarea" class="post-editableText" rows="4" cols="10" placeholder="Cuéntanos..."></textarea>
-      <img class="post-btnpost" src="pictures/send.png"></img>
+      <img class="post-btnpost" src="pictures/send.png">
     </section>
-
-    <section class="published-posts flex">
-       <div class="published-posts-container">
-          <div class="published-posts-box">
-          </div>
-        </div>
-     </section>   
+    <section class="published-posts">
+      <div class="published-posts-container">
+        <!--<div class="published-posts-box"></div>
+              <select class="published-posts-btn">
+                <option value="edit">Editar</option>
+                <option value="delete">Eliminar</option>
+              </select>-->
+      </div>
+      <!--<div class="published-posts-likes flex-wall">
+        <img class="published-posts-likes-img" src="pictures/heart.png">
+        <p class="published-posts-likes-number">30</p>
+      </div>-->
+    </section>
   `;
 
-  
-  const containerWall = document.createElement("div");
+  //observer();
+  const containerWall = document.createElement('div');
   containerWall.innerHTML = viewWall;
-  containerWall.className = "view-wall";
+  containerWall.className = 'view-wall';
 
-  const btnSignOut = containerWall.querySelector(".btn-exit");
-  const greeting = containerWall.querySelector(".user-text");
-  const commentPost = containerWall.querySelector(".post-editableText");
-  const btnPostComment = containerWall.querySelector(".post-btnpost");
-  const publishedPostsContainer = containerWall.querySelector(
-    ".published-posts-container"
-  );
-  const imageProfile = containerWall.querySelector(".user-img");
- 
+  const btnSignOut = containerWall.querySelector('.btn-exit');
+  const greeting = containerWall.querySelector('.user-text');
+  const commentPost = containerWall.querySelector('.post-editableText');
+  const btnPostComment = containerWall.querySelector('.post-btnpost');
+  const publishedPostsContainer = containerWall.querySelector('.published-posts-container');
+  const imageProfile = containerWall.querySelector('.user-img');
+
   let editStatus = false;
 
   greeting.innerHTML = `¡Hola, ${auth.currentUser.displayName}!`;
-  //console.log(auth.currentUser)
+  
 
   function imageSee(){
-   if (auth.currentUser.photoURL === null){
-    imageProfile.src = "pictures/user.png";
-    } else {
-    imageProfile.src = auth.currentUser.photoURL;
+    if (auth.currentUser.photoURL === null){
+     imageProfile.src = "pictures/user.png";
+     } else {
+     imageProfile.src = auth.currentUser.photoURL;
+   }
   }
-}
   imageSee();
   
-  // greeting.innerHTML = `¡Hola, ${localStorage.getItem('nameUser')}!`;
-
-  // getName();
+  
   firstLoad();
 
   function createDivs(postData) {
     const idPost = postData.id;
-    const datePost = postData.date;
-    //const fecha = new Date();
-    //const hour = fecha.toLocaleTimeString();
-    //console.log(hour)
     const name = postData.name;
     const post = postData.comment;
+    const datePost = postData.date;
     const likes = postData.likes ?? [];
     let likesQty = likes.length;
+    let hours = datePost.toDate().getHours() ;
+    let minutes = datePost.toDate().getMinutes();
+    minutes = ('0' + minutes).slice(-2);
 
-    const weekDay = [
-      "Domingo",
-      "Lunes",
-      "Martes",
-      "Miercoles",
-      "Jueves",
-      "Viernes",
-      "Sabado",
-    ];
-    const monthYear = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ];
+    //console.log( minutes);
+    let jornada = hours >= 12 ? 'PM'  : 'AM';
 
-    const container = document.createElement("div");
-    const containerNamePost = document.createElement("div");
-    const containerName = document.createElement("div");
-    const publicationDate = document.createElement("div");
-    const containerPost = document.createElement("textarea");
+    const weekDay = [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+    const monthYear = [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const container = document.createElement('div');
+    const containerHeadPost = document.createElement('div'); // **agregué esta línea
+    const containerNameDate = document.createElement('div'); // para agrupar name y date del post
+    const containerName = document.createElement('p'); // **cambié esta línea
+    const containerDate = document.createElement('p'); // **agregué esta línea
+    const containerPost = document.createElement('textarea');
+   
     // Variables para likes
-    const containerLikes = document.createElement("div");
-    const imgLikes = document.createElement("img");
-    const countLikes = document.createElement("p");
-    // Variables para editar
-    const btnEdit = document.createElement("button");
-    const btnEditText = document.createTextNode("Editar");
-    btnEdit.appendChild(btnEditText);
-    const btnDelete = document.createElement("button");
-    const btnDeleteText = document.createTextNode("Eliminar");
-    btnDelete.appendChild(btnDeleteText);
+    const containerLikes = document.createElement('div');
+    const imgLikes = document.createElement('img');
+    const countLikes = document.createElement('p');
 
-    containerNamePost.innerHTML = name;
+    // ***JC
+    // if(postData.likeColoredImg){
+    //   imgLikes.src = postData.likeColoredImg;
+    // }
+    // ***
+
+    // Variables para editar ** Cambié estas líneas
+    // const btnEdit = document.createElement('button');
+    // const btnEditText = document.createTextNode('Editar');
+    // btnEdit.appendChild(btnEditText);
+    // const btnDelete = document.createElement('button');
+    // const btnDeleteText = document.createTextNode('Eliminar');
+    // btnDelete.appendChild(btnDeleteText);
+
+    containerName.innerHTML = name;
     containerPost.innerHTML = post;
-    publicationDate.innerHTML = `${
-      weekDay[datePost.toDate().getDay()]
-    }, ${datePost.toDate().getDate()} de ${
-      monthYear[datePost.toDate().getMonth()]
-    }
-    de, ${datePost.toDate().getFullYear()}`;
+    containerDate.innerHTML = `${ weekDay[datePost.toDate().getDay()]}, ${datePost.toDate().getDate()}
+     de ${monthYear[datePost.toDate().getMonth()]} de ${datePost.toDate().getFullYear()}, a las ${hours % 12}:${minutes}   ${jornada}`;
 
-    containerPost.appendChild(containerName);
-    container.appendChild(containerName);
+    containerNameDate.appendChild(containerName); // **agregue esta línea
+    containerNameDate.appendChild(containerDate);
+    containerHeadPost.appendChild(containerNameDate);
+    //containerPost.appendChild(containerHeadPost); // **cambié esta línea
+    container.appendChild(containerHeadPost);
     container.appendChild(containerPost);
-    containerName.append(containerNamePost);
-    containerName.append(publicationDate);
-
+    // publishedPostsContainer.appendChild(containerName);
     // publishedPostsContainer.appendChild(containerPost);
-    container.setAttribute("class", "container-date");
-    containerName.setAttribute("class", "container-post-name");
-    publicationDate.setAttribute("class", "container-post-date");
-    containerNamePost.setAttribute("class", "container-post-namePost");
-    containerPost.setAttribute("class", "container-post");
-    containerPost.setAttribute("disabled", true);
-    container.setAttribute("id", idPost);
+    containerHeadPost.setAttribute('class', 'container-head-post'); // **agregué esta línea
+    containerNameDate.setAttribute('class', 'container-name-date'); // **agregué esta línea
+    containerName.setAttribute('class', 'container-post-name');
+    containerDate.setAttribute('class', 'container-post-date');
+    containerPost.setAttribute('class', 'container-post');
+    containerPost.setAttribute('disabled', true);
+    container.setAttribute('id', idPost);
     // para los likes
-    imgLikes.setAttribute("src", "pictures/heart.png");
-    imgLikes.setAttribute("class", "published-posts-likes-img");
-    containerLikes.setAttribute("class", "containerLikes");
-    countLikes.setAttribute("class", "published-posts-likes-number");
-    btnEdit.setAttribute("class", "btn-edit-post");
-    btnEdit.setAttribute("data-id", idPost);
-    btnDelete.setAttribute("class", "btn-delete-post");
-    btnDelete.setAttribute("data-id", idPost);
+    imgLikes.setAttribute('src', 'pictures/heart-disabled.png');
+    imgLikes.setAttribute('class', 'published-posts-likes-img');
+    containerLikes.setAttribute('class', 'containerLikes');
+    countLikes.setAttribute('class', 'published-posts-likes-number');
+    // **cmabié estas líneas
+    // btnEdit.setAttribute('class', 'btn-edit-post');
+    // btnEdit.setAttribute('data-id', idPost);
+    // btnDelete.setAttribute('class', 'btn-delete-post');
+    // btnDelete.setAttribute('data-id', idPost);
+    //** */
     containerLikes.appendChild(imgLikes);
     containerLikes.appendChild(countLikes);
-    containerLikes.appendChild(btnEdit);
-    containerLikes.appendChild(btnDelete);
+    // **Cambié estas líneas
+    // containerLikes.appendChild(btnEdit);
+    // containerLikes.appendChild(btnDelete);
+    // **
     // publishedPostsContainer.appendChild(containerLikes);
     container.appendChild(containerLikes);
     publishedPostsContainer.appendChild(container);
 
-    btnDelete.addEventListener("click", (event) => {
-      deletePost(event.target.dataset.id);
-      publishedPostsContainer.removeChild(container);
-    });
+    // **Agregué esta función para ñadir menú desplegable
+    function dropdownMenu() {
+       // **Variables para los tres puntos
+      const threeDots = document.createElement('img');
+      threeDots.setAttribute('src', 'pictures/three-dots-yellow.png');
+      threeDots.setAttribute('class', 'three-dots');
+      containerHeadPost.appendChild(threeDots);
 
-    btnEdit.addEventListener("click", (e) => {
-      if (!editStatus) {
-        containerPost.disabled = false;
-        btnEdit.innerHTML = "Actualizar";
-        editStatus = true;
-      } else {
-        updatePost(e.target.dataset.id, { comment: containerPost.value });
-        containerPost.disabled = true;
-        btnEdit.innerHTML = "Editar";
-        editStatus = false;
-      }
-    });
+      const dropDown = document.createElement('ul');
+      dropDown.setAttribute('class', 'dropdown-menu')
+      const dropDownEdit = document.createElement('li');
+      dropDownEdit.innerHTML = 'Editar';
+      const dropDownDelete = document.createElement('li');
+      dropDownDelete.innerHTML = 'Eliminar';
+      dropDownEdit.setAttribute('data-id', idPost);
+      dropDownDelete.setAttribute('data-id', idPost);
+      dropDown.appendChild(dropDownEdit);
+      dropDown.appendChild(dropDownDelete);
+      containerHeadPost.appendChild(dropDown);
+
+      let menuStatus = false;
+      threeDots.addEventListener('click', () => {
+        if(!menuStatus){
+          dropDown.style.display = 'block';
+          menuStatus = true;
+        }else{
+          dropDown.style.display = 'none';
+          menuStatus = false;
+        }
+      })
+
+      dropDownEdit.addEventListener('click', (e) => {
+        if (!editStatus) {
+          //agregar mensaje de confirmación
+          containerPost.disabled = false;
+          dropDownEdit.innerHTML = 'Actualizar';
+          editStatus = true;
+        } else {
+          updatePost(e.target.dataset.id, { comment: containerPost.value });
+          containerPost.disabled = true;
+          dropDownEdit.innerHTML = 'Editar';
+          editStatus = false;
+        }
+      });
+
+      dropDownDelete.addEventListener('click', (event) => {
+        deletePost(event.target.dataset.id);
+        publishedPostsContainer.removeChild(container);
+      });
+    }
+
+    if(postData.userId == auth.currentUser.uid){
+      dropdownMenu();
+    }
+    // **hasta acá
+
+    // btnDelete.addEventListener('click', (event) => {
+    //   deletePost(event.target.dataset.id);
+    //   publishedPostsContainer.removeChild(container);
+    // });
+
+    // btnEdit.addEventListener('click', (e) => {
+    //   if (!editStatus) {
+    //     containerPost.disabled = false;
+    //     btnEdit.innerHTML = 'Actualizar';
+    //     editStatus = true;
+    //   } else {
+    //     updatePost(e.target.dataset.id, { comment: containerPost.value });
+    //     containerPost.disabled = true;
+    //     btnEdit.innerHTML = 'Editar';
+    //     editStatus = false;
+    //   }
+    // });
 
     countLikes.innerHTML = likesQty;
 
-    imgLikes.addEventListener("click", (e) => {
+    imgLikes.addEventListener('click', (e) => {
       e.preventDefault();
+      
       const isIncluded = likes.includes(auth.currentUser.uid);
 
-      if (isIncluded) {
-        const foundLike = likes.findIndex((e) => e === auth.currentUser.uid);
+      if(isIncluded){
+        const foundLike = likes.findIndex(e => e === auth.currentUser.uid);
         likes.splice(foundLike, 1);
         likesQty--;
-        console.log("diste dislike");
-      } else {
+        imgLikes.src = 'pictures/heart-disabled.png'; // **agregué esta línea y falata que aparezca el corazón activo al cargar página
+        console.log('diste dislike');
+      }else{
         likes.push(auth.currentUser.uid);
         likesQty++;
-        console.log("diste like");
+        imgLikes.src = 'pictures/heart.png'; // **agregué esta línea
+        console.log('diste like');
       }
       countLikes.innerHTML = likesQty;
-      updatePost(idPost, { likes: likes, likesCounter: likesQty });
+      updatePost(idPost, {likes: likes, likesCounter: likesQty});
     });
-    countLikes.innerHTML = likesQty;
   }
 
   function firstLoad() {
-    const colRef = collection(db, "comments");
+    const colRef = collection(db, 'comments');
     const q = query(colRef, orderBy("date", "desc"));
-    let posts = [];
-    //console.log(posts);
-    getDocs(q).then((onSnapshot) => {
-      onSnapshot.docs.forEach((document) => {
-        const commentData = { id: document.id, ...document.data() };
-
-        posts.push({
-          name: commentData.name,
-          post: commentData.comment,
-          date: commentData.date.toDate(),
+    
+    getDocs(q)
+      .then((onSnapshot) => {
+        onSnapshot.docs.forEach((document) => {
+          let commentData = { id: document.id, ...document.data() };
+          //commentData = likes(commentData, auth.currentUser.uid);
+          createDivs(commentData);
         });
-
-        createDivs(commentData);
       });
-    });
   }
 
-  btnPostComment.addEventListener("click", () => {
-    if (commentPost.value !== "") {
+  // 1. id usuario actual
+  // 2. document
+  // 3. la referencia de la imagen
+  // function likes(document, idUser) {
+  //   if(document.likes.includes(idUser)){
+  //     return {...document, likeColoredImg: 'pictures/heart.png' }
+  //   }
+  // }
+
+  btnPostComment.addEventListener('click', (e) => {
+    e.preventDefault;
+    if (commentPost.value !== '') {
       const date = Timestamp.fromDate(new Date());
       const userId = auth.currentUser.uid;
       const likes = [];
       const likesCounter = 0;
-      saveComment(
-        commentPost.value,
-        auth.currentUser.displayName,
-        date,
-        userId,
-        likes,
-        likesCounter
-      ).then((result) => {
-        const commentData = {
-          id: result.id,
-          name: auth.currentUser.displayName,
-          comment: commentPost.value,
-        };
-        createDivs(commentData);
-        commentPost.value = "";
-        console.log(result.id);
-      });
+      saveComment(commentPost.value, auth.currentUser.displayName, date, userId, likes, likesCounter)
+        .then((result) => {
+          //console.log(result.orderBy('date', 'desc'));
+          //const q = query(result, orderBy('date', 'desc'));
+          publishedPostsContainer.innerHTML = '';
+          firstLoad();
+          const commentData = { id: result.id, name: auth.currentUser.displayName, comment: commentPost.value}
+          //createDivs(commentData);
+          commentPost.value = '';
+          console.log(result);
+        });
     }
   });
 
-  btnSignOut.addEventListener("click", () => {
+  btnSignOut.addEventListener('click', () => {
     exit()
       .then(() => {
-        changeRoute("#/login");
+        changeRoute('#/login');
       })
       .catch((error) => {
         console.log(error);

@@ -6,16 +6,14 @@ import {
   doc,
   setDoc,
   getDoc,
-  onSnapshot,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   Timestamp,
   query,
-  where,
-  collection,
-  deleteDoc,
-  addDoc,
-  getDocs,
-  orderBy,
-  updateDoc,
+  orderBy
 } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
 import {
   getAuth,
@@ -28,6 +26,8 @@ import {
   signOut,
   updateProfile,
 } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
+
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -61,7 +61,6 @@ const user = auth.currentUser;// autentifica el usuario
 export {
   doc,
   setDoc,
-  getFirestore,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -71,21 +70,19 @@ export {
   GoogleAuthProvider,
   signInWithPopup,
   provider,
-  user,
   getDoc,
-  orderBy,
-  docRef,
-  docSnap,
-  Timestamp,
-  query,
-  onSnapshot,
-  where,
-  addDoc,
+  // docRef,
+  // docSnap,
   collection,
   getDocs,
   querySnapshot,
   signOut,
-  deleteDoc,
+  //user,
   updateProfile,
+  addDoc,
   updateDoc,
+  deleteDoc,
+  Timestamp,
+  query,
+  orderBy,
 };
