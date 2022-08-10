@@ -81,6 +81,7 @@ export const wall = () => {
     const monthYear = [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
     const container = document.createElement('div');
+    container.setAttribute('class', 'general-container-post');
     const containerHeadPost = document.createElement('div'); // **agregué esta línea
     const containerNameDate = document.createElement('div'); // para agrupar name y date del post
     const containerName = document.createElement('p'); // **cambié esta línea
@@ -93,15 +94,18 @@ export const wall = () => {
     const countLikes = document.createElement('p');
 
     // ***JC
-    // if(postData.likeColoredImg){
-    //   imgLikes.src = postData.likeColoredImg;
-    // }
+    if(postData.likeColoredImg){
+      imgLikes.src = postData.likeColoredImg;
+      console.log('Entrando al if');
+    } else {
+      imgLikes.setAttribute('src', 'pictures/heart-disabled.png');
+    }
     // ***
 
     // Variables para editar ** Cambié estas líneas
-    // const btnEdit = document.createElement('button');
-    // const btnEditText = document.createTextNode('Editar');
-    // btnEdit.appendChild(btnEditText);
+    const btnUpdate = document.createElement('button');
+    const btnUpdateText = document.createTextNode('Actualizar');
+    btnUpdate.appendChild(btnUpdateText);
     // const btnDelete = document.createElement('button');
     // const btnDeleteText = document.createTextNode('Eliminar');
     // btnDelete.appendChild(btnDeleteText);
@@ -127,13 +131,13 @@ export const wall = () => {
     containerPost.setAttribute('disabled', true);
     container.setAttribute('id', idPost);
     // para los likes
-    imgLikes.setAttribute('src', 'pictures/heart-disabled.png');
+    // imgLikes.setAttribute('src', 'pictures/heart-disabled.png');
     imgLikes.setAttribute('class', 'published-posts-likes-img');
     containerLikes.setAttribute('class', 'containerLikes');
     countLikes.setAttribute('class', 'published-posts-likes-number');
     // **cmabié estas líneas
-    // btnEdit.setAttribute('class', 'btn-edit-post');
-    // btnEdit.setAttribute('data-id', idPost);
+    btnUpdate.setAttribute('class', 'btn-update-post');
+    btnUpdate.setAttribute('data-id', idPost);
     // btnDelete.setAttribute('class', 'btn-delete-post');
     // btnDelete.setAttribute('data-id', idPost);
     //** */
@@ -141,7 +145,7 @@ export const wall = () => {
     containerLikes.appendChild(countLikes);
     // **Cambié estas líneas
     // containerLikes.appendChild(btnEdit);
-    // containerLikes.appendChild(btnDelete);
+    containerLikes.appendChild(btnUpdate);
     // **
     // publishedPostsContainer.appendChild(containerLikes);
     container.appendChild(containerLikes);
@@ -178,23 +182,41 @@ export const wall = () => {
         }
       })
 
+      // Modal para confirmación de delete y edit
+      const modalConf = document.createElement('dialog');
+      const textModalConf = document.createElement('p');
+      textModalConf.innerHTML = '¿Desea eliminar esta publicación?';
+      const btnYesModalConf = document.createElement('button');
+      btnYesModalConf.innerHTML = 'Eliminar';
+      const btnNoModalConf = document.createElement('button');
+      btnNoModalConf.innerHTML = 'Cancelar';
+      modalConf.appendChild(textModalConf);
+      modalConf.appendChild(btnYesModalConf);
+      modalConf.appendChild(btnNoModalConf);
+      containerWall.appendChild(modalConf);
+      // hasta acá modal
+
       dropDownEdit.addEventListener('click', (e) => {
-        if (!editStatus) {
-          //agregar mensaje de confirmación
-          containerPost.disabled = false;
-          dropDownEdit.innerHTML = 'Actualizar';
-          editStatus = true;
-        } else {
-          updatePost(e.target.dataset.id, { comment: containerPost.value });
-          containerPost.disabled = true;
-          dropDownEdit.innerHTML = 'Editar';
-          editStatus = false;
-        }
+        btnUpdate.style.display = 'block';
+        containerPost.disabled = false;
+        dropDown.style.display = 'none';
+        containerPost.focus();
+
+        btnUpdate.addEventListener('click', () => {
+            updatePost(e.target.dataset.id, { comment: containerPost.value });
+            containerPost.disabled = true;
+            btnUpdate.style.display = 'none';
+        })
       });
 
       dropDownDelete.addEventListener('click', (event) => {
-        deletePost(event.target.dataset.id);
-        publishedPostsContainer.removeChild(container);
+        // Agregar mensaje de confirmación
+        modalConf.showModal();
+        //pendiente
+        if(btnYesModalConf.click()){
+          deletePost(event.target.dataset.id);
+          publishedPostsContainer.removeChild(container);
+        }
       });
     }
 
@@ -202,24 +224,6 @@ export const wall = () => {
       dropdownMenu();
     }
     // **hasta acá
-
-    // btnDelete.addEventListener('click', (event) => {
-    //   deletePost(event.target.dataset.id);
-    //   publishedPostsContainer.removeChild(container);
-    // });
-
-    // btnEdit.addEventListener('click', (e) => {
-    //   if (!editStatus) {
-    //     containerPost.disabled = false;
-    //     btnEdit.innerHTML = 'Actualizar';
-    //     editStatus = true;
-    //   } else {
-    //     updatePost(e.target.dataset.id, { comment: containerPost.value });
-    //     containerPost.disabled = true;
-    //     btnEdit.innerHTML = 'Editar';
-    //     editStatus = false;
-    //   }
-    // });
 
     countLikes.innerHTML = likesQty;
 
@@ -253,7 +257,8 @@ export const wall = () => {
       .then((onSnapshot) => {
         onSnapshot.docs.forEach((document) => {
           let commentData = { id: document.id, ...document.data() };
-          //commentData = likes(commentData, auth.currentUser.uid);
+          commentData = likes(commentData, auth.currentUser.uid);
+          console.log(commentData);
           createDivs(commentData);
         });
       });
@@ -262,11 +267,12 @@ export const wall = () => {
   // 1. id usuario actual
   // 2. document
   // 3. la referencia de la imagen
-  // function likes(document, idUser) {
-  //   if(document.likes.includes(idUser)){
-  //     return {...document, likeColoredImg: 'pictures/heart.png' }
-  //   }
-  // }
+  function likes(document, idUser) {
+    if(document.likes.includes(idUser)){
+      return {...document, likeColoredImg: 'pictures/heart.png' }
+    }
+    return document;
+  }
 
   btnPostComment.addEventListener('click', (e) => {
     e.preventDefault;

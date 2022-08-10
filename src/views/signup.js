@@ -55,7 +55,6 @@ export const signup = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(userCredential);
           // Actualizar el perfil del usuario en auth
           updateProfile(user, {
             displayName: `${name.value} ${lastName.value}`,
@@ -68,7 +67,6 @@ export const signup = () => {
             LastName: lastName.value,
             Email: email.value,
           });
-
           // Si el usuario verifico mail puede ingresar al wall
           // sendEmailVerification(auth.currentUser)
           //   .then(() => {
