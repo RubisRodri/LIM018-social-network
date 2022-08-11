@@ -3,7 +3,7 @@
  */
 
 import { signup } from '../src/views/signup.js';
-import { login } from '../src/views/login.js';
+//import { login } from '../src/views/login.js';
 // import { changeRoute } from '../routes/router.js';
 
 jest.mock('../src/index.js');
@@ -14,7 +14,6 @@ describe('signup', () => {
     document.body.appendChild(signup());
     const btnSignup = document.querySelector('.signup-btnSignup');
     expect(btnSignup instanceof HTMLElement).toBe(true);
-    btnSignup.click();
   });
 
   it('en el errorText debe decir que Los datos ingresados no son válidos.', () => {
