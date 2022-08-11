@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { login } from '../src/views/login.js';
-// import { registerGoogle } from '../src/index';
+import { registerGoogle } from '../src/index';
 
 jest.mock('../src/index.js');
 jest.mock('../src/firebase.js');
@@ -27,26 +27,17 @@ describe('testeando la función login()', () => {
 
   // ***pendiente --> no corre
   it('debería cambiar de ruta al #/wall', (done) => {
+    document.body.innerHTML = '<div id="root"></div>';
     document.body.appendChild(login());
-    const root = document.createElement('div');
-    root.setAttribute('id', 'root');
-    document.body.appendChild(root);
-    const btnLogin = document.querySelector('.login-btnLogin');
+
+    const btnLogin = document.querySelector('.login-google-img');
     btnLogin.click();
 
     const p = new Promise(process.nextTick);
-
     p.then(() => {
-      console.log(window.location.hash);
       expect(window.location.hash).toBe('#/wall');
       done();
-    })
-    
-    // setTimeout(() => {
-
-    // }, 2000)
-
-    // entrar a changeRoute y testear esa línea
+    });
   });
   // **hasta acá
 
@@ -71,6 +62,9 @@ describe('testeando la función login()', () => {
 
   // *** pendiente test de Google si es que es un caso de éxito
   it('al hacer click al botón de Google debería pasar al catch', () => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    registerGoogle.mockImplementation(() => Promise.reject({ code: 12, message: '', customData: { email: '' } }));
+
     document.body.appendChild(login());
     const btnGoogle = document.querySelector('.login-google-img');
 
