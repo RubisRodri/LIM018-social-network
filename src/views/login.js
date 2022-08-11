@@ -45,9 +45,8 @@ export const login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          changeRoute('#/wall');
           console.log(user);
-          
+          changeRoute('#/wall');
           // if (user.emailVerified) {
           //   changeRoute('#/wall');
           // }
@@ -80,18 +79,20 @@ export const login = () => {
         //   LastName: user.lastName,
         //   Email: user.email,
         // });
+        console.log('111111111111111111')
         changeRoute('#/wall');
       // ...
       })
       .catch((error) => {
       // Handle Errors here.
+        console.log(error);
         const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
         const email = error.customData.email;
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
-        console.log(credential);
+        errorText.innerHTML = 'El correo y/o contraseña ingresados no están conectados a ninguna cuenta.';
       // ...
       });
   });
