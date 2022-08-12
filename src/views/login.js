@@ -27,7 +27,7 @@ export const login = () => {
       </section>
     </main>
   `;
-  // console.log('Hola!!');
+  
   const containerLogin = document.createElement('div');
   containerLogin.innerHTML = viewLogin;
   containerLogin.className = 'view-login';
@@ -52,6 +52,7 @@ export const login = () => {
           // }
         })
         .catch((error) => {
+          console.log('Hola Hola :¨D');
           const errorCode = error.code;
           const errorMessage = error.message;
           errorText.innerHTML = 'El correo y/o contraseña ingresados no están conectados a ninguna cuenta.';
@@ -84,8 +85,8 @@ export const login = () => {
       // ...
       })
       .catch((error) => {
-      // Handle Errors here.
-        console.log(error);
+      // Handle Errors here
+        console.log('Buenas tardes');
         const errorCode = error.code;
         const errorMessage = error.message;
         // The email of the user's account used.
