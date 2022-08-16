@@ -77,6 +77,5 @@ describe('testeando la función wall()', () => {
       expect(window.location.hash).toBe('#/login');
       done();
     });
-
   });
 });

@@ -25,3 +25,5 @@ export const registerGoogle = jest.fn(() => Promise.resolve({ user: '' }));
 export const saveComment = () => Promise.resolve({});
 
 export const exit = () => Promise.resolve();
+
+
