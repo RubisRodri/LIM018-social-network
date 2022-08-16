@@ -8,7 +8,6 @@ jest.mock('../src/index.js');
 jest.mock('../src/firebase.js');
 
 describe('testeando la función login()', () => {
-  
   //estos tests son del boton Login
   it('debería mostrar el boton Iniciar Sesión', () => {
     document.body.appendChild(login());
@@ -23,6 +22,7 @@ describe('testeando la función login()', () => {
     const password = document.querySelector('.login-password');
     email.value = 'jannery@gmail.com';
     password.value = '123123';
+
   
     document.body.innerHTML = '<div id="root"></div>';
     
@@ -33,7 +33,6 @@ describe('testeando la función login()', () => {
       done();
     });
   })
-
 
 
   it('en el errorText debe decir que El correo y/o contraseña ingresados no están conectados a ninguna cuenta.', () => {
@@ -98,6 +97,5 @@ describe('testeando la función login()', () => {
       expect(errorText.textContent).toEqual('El correo y/o contraseña ingresados no están conectados a ninguna cuenta.');
       done();
     });
-    
   });
 });
