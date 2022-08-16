@@ -69,6 +69,8 @@ export const wall = () => {
     const datePost = postData.date;
     const likes = postData.likes ?? [];
     let likesQty = likes.length;
+
+    
     let hours = datePost.toDate().getHours() ;
     let minutes = datePost.toDate().getMinutes();
     minutes = ('0' + minutes).slice(-2);
