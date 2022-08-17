@@ -3,14 +3,14 @@
  */
 import { login } from '../src/views/login.js';
 import { registerGoogle } from '../src/index';
- 
+
 jest.mock('../src/index.js');
 jest.mock('../src/firebase.js');
  
- describe('testeando la función login()', () => {
+describe('testeando la función login()', () => {
    //estos tests son del boton Login
-   it('debería mostrar el boton Iniciar Sesión', () => {
-     document.body.appendChild(login());
+  it('debería mostrar el boton Iniciar Sesión', () => {
+   document.body.appendChild(login());
      const btnLogin = document.querySelector('.login-btnLogin');
      expect(btnLogin instanceof HTMLElement).toBe(true);
    });

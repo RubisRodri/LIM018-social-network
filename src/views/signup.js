@@ -1,4 +1,5 @@
 import { registerUser } from '../index.js';
+// eslint-disable-next-line import/no-cycle
 import { changeRoute } from '../routes/router.js';
 import { updateProfile, setDoc, doc, db } from '../firebase.js';
 
@@ -37,7 +38,6 @@ export const signup = () => {
   const containerSignup = document.createElement('div');
   containerSignup.innerHTML = viewSignup;
   containerSignup.className = 'view-signup';
-  
 
   const btnSignup = containerSignup.querySelector('.signup-btnSignup.btn-paw');
   const email = containerSignup.querySelector('.signup-email');
