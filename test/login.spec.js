@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
- import { login } from '../src/views/login.js';
- import { registerGoogle } from '../src/index';
+import { login } from '../src/views/login.js';
+import { registerGoogle } from '../src/index';
  
- jest.mock('../src/index.js');
- jest.mock('../src/firebase.js');
+jest.mock('../src/index.js');
+jest.mock('../src/firebase.js');
  
  describe('testeando la función login()', () => {
    //estos tests son del boton Login
