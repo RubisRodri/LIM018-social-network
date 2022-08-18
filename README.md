@@ -41,8 +41,6 @@ Como usuario deseo salir de la red social.
 
 ![PrototipoAltaFidelidad2](Mobile2.png)
 
-![PrototipoAltaFidelidad2](Mobile3.png)
-
 ![PrototipoAltaFidelidad2](Mobile4.png)
 
 ![PrototipoAltaFidelidad2](Desktop1.png)
@@ -51,6 +49,6 @@ Como usuario deseo salir de la red social.
 
 ## 5. GitHub Pages
 
-Acceda a la página web mediante el siguiente enlace: https://jannerymbf.github.io/LIM018-social-network/
+Acceda a la página web mediante el siguiente enlace: https://rubisrodri.github.io/LIM018-social-network/
 
 
